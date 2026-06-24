@@ -95,23 +95,6 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
 
   return (
     <div>
-      <div className="mb-8 flex items-start justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[#07152f]">Audit History</h1>
-          <p className="mt-4 text-lg text-[#33476b]">View the complete history of actions performed on claims.</p>
-        </div>
-        <div className="hidden items-center gap-4 lg:flex">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-lg font-extrabold text-blue-700">
-            {user?.name.charAt(0)}
-          </div>
-          <div>
-            <div className="text-lg font-extrabold">{user?.name}</div>
-            <div className="text-[#33476b]">{user?.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
-          </div>
-          <ChevronDown size={20} className="text-[#33476b]" />
-        </div>
-      </div>
-
       <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
         <div className="grid gap-4 xl:grid-cols-[1.5fr_1fr_1fr_1fr_1.25fr_auto]">
           <div className="relative">

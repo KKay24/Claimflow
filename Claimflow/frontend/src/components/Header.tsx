@@ -104,13 +104,8 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
       </aside>
 
       <main className="min-h-screen lg:pl-[256px]">
-        <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-6 shadow-sm sm:px-8 lg:px-10">
-          <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6">
-            <div>
-              <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
-              <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
-            </div>
-
+        <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-4 shadow-sm sm:px-8 lg:px-10">
+          <div className="mx-auto flex max-w-[1480px] items-center justify-end gap-6">
             <div className="relative hidden lg:block">
               <button
                 onClick={() => setIsAccountMenuOpen((open) => !open)}
@@ -151,7 +146,13 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
           </div>
         </nav>
 
-        <div className="mx-auto max-w-[1480px] px-5 py-8 sm:px-8 lg:px-10">{children}</div>
+        <div className="mx-auto max-w-[1480px] px-5 py-8 sm:px-8 lg:px-10">
+          <div className="mb-8">
+            <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
+            <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
+          </div>
+          {children}
+        </div>
       </main>
     </div>
   );

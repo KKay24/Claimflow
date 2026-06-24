@@ -11,7 +11,6 @@ import {
   XCircle,
 } from 'lucide-react';
 import api from '../utils/api';
-import { useAuth } from '../context/AuthContext';
 
 interface Applicant {
   id: string;
@@ -45,7 +44,6 @@ const statusFilters = [
 ];
 
 const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) => {
-  const { user } = useAuth();
   const [claims, setClaims] = useState<Application[]>([]);
   const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
@@ -110,16 +108,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white my-0 leading-none">
-            Reviewer workspace
-          </h1>
-          <p className="text-sm text-slate-500 mt-1.5">
-            Welcome back, {user?.name.split(' ')[0]}. Review submitted expense claims and move them through the approval workflow.
-          </p>
-        </div>
-
+      <div className="flex justify-end">
         <div className="relative w-full lg:w-80">
           <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input

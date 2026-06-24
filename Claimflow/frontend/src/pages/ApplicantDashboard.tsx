@@ -141,16 +141,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-extrabold text-[#07152f] my-0 leading-none">
-            My Claims
-          </h1>
-          <p className="text-lg text-[#33476b] mt-5">
-            View and track all your expense reimbursement claims.
-          </p>
-        </div>
-
+      <div className="flex justify-end">
         <button
           onClick={onCreate}
           className="flex h-14 items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-bold px-7 rounded-[8px] shadow-lg shadow-blue-600/20 transition-all duration-200 cursor-pointer text-base"

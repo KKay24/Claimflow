@@ -46,8 +46,8 @@ function ClaimFlowApp() {
         <AuditHistory onViewClaim={setSelectedClaimId} />
       ) : activeView === 'profile' ? (
         <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="text-3xl font-extrabold">My Profile</h1>
-          <p className="mt-2 text-slate-500">{user?.name} · {user?.role}</p>
+          <p className="text-lg font-extrabold text-[#07152f]">{user?.name}</p>
+          <p className="mt-1 text-slate-500">{user?.role}</p>
           <p className="mt-1 text-slate-500">{user?.email}</p>
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <section className="rounded-[8px] border border-blue-200 bg-blue-50 p-6">
