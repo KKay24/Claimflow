@@ -96,28 +96,30 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
   return (
     <div>
       <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 xl:grid-cols-[1.5fr_1fr_1fr_1fr_1.25fr_auto]">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" size={22} />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by claim title or ID..."
-              className="h-12 w-full rounded-[8px] border border-slate-200 pl-12 pr-4 outline-none focus:border-blue-500"
-            />
-          </div>
-          {['All Claims', 'All Actions', 'All Users'].map((label) => (
-            <button key={label} className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 font-bold">
-              {label}
-              <ChevronDown size={18} />
+        <div className="overflow-x-auto">
+          <div className="grid min-w-[1120px] grid-cols-[280px_178px_190px_174px_226px_128px] gap-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" size={22} />
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search by claim title or ID..."
+                className="h-12 w-full rounded-[8px] border border-slate-200 pl-12 pr-4 text-sm outline-none focus:border-blue-500"
+              />
+            </div>
+            {['All Claims', 'All Actions', 'All Users'].map((label) => (
+              <button key={label} className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-bold">
+                {label}
+                <ChevronDown size={18} />
+              </button>
+            ))}
+            <button className="flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-sm font-bold">
+              <CalendarDays size={20} />
+              01 May 2024 - 12 May 2024
+              <ChevronDown size={18} className="ml-auto" />
             </button>
-          ))}
-          <button className="flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4 font-bold">
-            <CalendarDays size={20} />
-            Date Range
-            <ChevronDown size={18} className="ml-auto" />
-          </button>
-          <button className="h-12 rounded-[8px] border border-slate-200 px-5 font-bold text-[#33476b]">Clear Filters</button>
+            <button className="h-12 rounded-[8px] border border-slate-200 px-4 text-sm font-bold text-[#33476b]">Clear Filters</button>
+          </div>
         </div>
 
         <div className="mt-5 flex items-center justify-between rounded-[8px] border border-blue-100 bg-blue-50 px-5 py-4">
