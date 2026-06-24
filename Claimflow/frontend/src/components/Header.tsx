@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
+  ChevronDown,
   ClipboardList,
   FileClock,
   FilePlus2,
@@ -37,6 +38,37 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
 
   if (!user) return <>{children}</>;
 
+  const pageCopy: Record<AppView, { title: string; subtitle: string }> = {
+    dashboard: {
+      title: user.role === 'REVIEWER' ? 'Review Claims' : 'My Claims',
+      subtitle:
+        user.role === 'REVIEWER'
+          ? 'View and review expense reimbursement claims submitted by employees.'
+          : 'View and track all your expense reimbursement claims.',
+    },
+    claims: {
+      title: user.role === 'REVIEWER' ? 'Review Claims' : 'My Claims',
+      subtitle:
+        user.role === 'REVIEWER'
+          ? 'View and review expense reimbursement claims submitted by employees.'
+          : 'View and track all your expense reimbursement claims.',
+    },
+    create: {
+      title: 'Create / Edit Claim',
+      subtitle: 'Fill in the details below to create a new claim or update your draft.',
+    },
+    audit: {
+      title: 'Audit History',
+      subtitle: 'View the complete history of actions performed on claims.',
+    },
+    profile: {
+      title: 'My Profile',
+      subtitle: 'Manage your account details, support options, and session.',
+    },
+  };
+
+  const currentPage = pageCopy[activeView];
+
   return (
     <div className="min-h-screen bg-[#f7faff] text-[#07152f]">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[256px] flex-col bg-[#061f3c] px-4 py-8 text-white shadow-2xl lg:flex">
@@ -72,6 +104,26 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
       </aside>
 
       <main className="min-h-screen lg:pl-[256px]">
+        <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-6 shadow-sm sm:px-8 lg:px-10">
+          <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6">
+            <div>
+              <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
+              <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
+            </div>
+
+            <div className="hidden items-center gap-4 lg:flex">
+              <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-blue-600 text-white">
+                <span className="text-lg font-extrabold">{user.name.charAt(0)}</span>
+              </div>
+              <div>
+                <div className="text-[18px] font-extrabold leading-tight">{user.name}</div>
+                <div className="text-[17px] text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
+              </div>
+              <ChevronDown size={20} className="text-[#33476b]" />
+            </div>
+          </div>
+        </nav>
+
         <div className="mx-auto max-w-[1480px] px-5 py-8 sm:px-8 lg:px-10">{children}</div>
       </main>
     </div>
