@@ -35,4 +35,7 @@ pnpm-debug.log*
 
 # Database data
 pgdata/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 uploads/

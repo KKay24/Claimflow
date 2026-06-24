@@ -13,7 +13,7 @@ The current implementation includes:
 - JWT-based login.
 - Applicant claim creation, editing, viewing, and submission.
 - Reviewer claim listing, filtering, viewing, and workflow decisions.
-- PostgreSQL persistence through TypeORM entities.
+- SQLite local persistence and PostgreSQL deployment persistence through TypeORM entities.
 - A state machine service that validates legal status transitions.
 - Audit logs for application creation and status changes.
 - Optional file attachment metadata for claims.
@@ -39,7 +39,7 @@ The frontend is a React application built with Vite. It handles login, stores th
 
 The backend is a NestJS application. It exposes REST endpoints, authenticates requests with JWT, checks role permissions with guards and decorators, applies workflow rules through the state machine service, and persists data using TypeORM.
 
-PostgreSQL stores users, applications, attachments, and audit logs.
+TypeORM stores users, applications, attachments, and audit logs. Local development uses SQLite, while PostgreSQL remains supported for deployment.
 
 ## 5. Backend Modules
 
@@ -198,9 +198,15 @@ Every new claim starts with an audit entry from `null` to `DRAFT`. Each later st
 - Optional comment
 - Timestamp
 
-## 11. Deployment Notes
+## 11. Database Configuration
 
-The repository includes `docker-compose.yml` for local PostgreSQL. The backend currently uses TypeORM `synchronize: true`, which is convenient for development but should be replaced with migrations before production deployment.
+Local development uses SQLite when `DB_TYPE=sqlite`. This creates a local `claimflow.sqlite` file and avoids requiring Docker or a PostgreSQL service.
+
+Production or deployment environments can use PostgreSQL by setting `DB_TYPE=postgres` and providing the normal PostgreSQL connection settings.
+
+## 12. Deployment Notes
+
+The repository includes `docker-compose.yml` for PostgreSQL when needed. The backend currently uses TypeORM `synchronize: true`, which is convenient for development but should be replaced with migrations before production deployment.
 
 Recommended production hardening:
 

@@ -21,7 +21,7 @@ export class Attachment {
   @Column({ type: 'integer', name: 'file_size' })
   fileSize: number;
 
-  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @OneToOne(() => Application, (application) => application.attachment, { onDelete: 'CASCADE' })

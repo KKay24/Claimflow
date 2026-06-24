@@ -30,7 +30,7 @@ export class Application {
   title: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: ExpenseCategory,
   })
   category: ExpenseCategory;
@@ -45,7 +45,7 @@ export class Application {
   attachmentUrl: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: ApplicationStatus,
     default: ApplicationStatus.DRAFT,
   })
@@ -54,10 +54,10 @@ export class Application {
   @Column({ name: 'applicant_id' })
   applicantId: string;
 
-  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.applications, { onDelete: 'CASCADE' })

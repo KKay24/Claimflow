@@ -38,19 +38,26 @@ stateDiagram-v2
 
 - Frontend: React, Vite, TypeScript, React Query, Axios, Tailwind CSS
 - Backend: NestJS, TypeScript, TypeORM, Passport JWT, bcrypt
-- Database: PostgreSQL
+- Local database: SQLite through TypeORM
+- Deployment database: PostgreSQL through TypeORM
 - Local infrastructure: Docker Compose for PostgreSQL
 
 ## Local Setup
 
-### Database
+### Local Database
 
-```powershell
-cd Claimflow
-docker compose up -d
+Local development can run without Docker or PostgreSQL by using SQLite.
+
+Create `Claimflow/backend/.env` from `Claimflow/backend/.env.example`, then use:
+
+```text
+DB_TYPE=sqlite
+DB_DATABASE=claimflow.sqlite
 ```
 
-This starts PostgreSQL using the credentials in `docker-compose.yml`.
+TypeORM creates the SQLite database file automatically when the backend starts.
+
+For PostgreSQL deployment, set `DB_TYPE=postgres` and provide `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_DATABASE`.
 
 ### Backend
 

@@ -22,7 +22,7 @@ export class AuditLog {
   @Column({ type: 'text', nullable: true })
   comment: string | null;
 
-  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ManyToOne(() => Application, (application) => application.auditLogs, { onDelete: 'CASCADE' })
