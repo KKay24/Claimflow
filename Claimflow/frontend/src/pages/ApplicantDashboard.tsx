@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
-import { useAuth } from '../context/AuthContext';
 import {
   Plus,
   FileText,
-  CheckCircle,
-  FileSpreadsheet,
   AlertCircle,
-  TrendingUp,
   Loader2,
   Eye,
+  Search,
+  CalendarDays,
+  ChevronDown,
 } from 'lucide-react';
 
 interface Attachment {
@@ -35,10 +34,10 @@ interface Application {
 
 interface ApplicantDashboardProps {
   onViewClaim: (id: string) => void;
+  onCreate: () => void;
 }
 
-const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim }) => {
-  const { user } = useAuth();
+const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, onCreate }) => {
   const [claims, setClaims] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -118,8 +117,6 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim }) 
   };
 
   // Stats calculation
-  const totalAmount = claims.reduce((acc, c) => acc + parseFloat(c.amount as any), 0);
-  const approvedCount = claims.filter((c) => c.status === 'APPROVED').length;
   const draftCount = claims.filter((c) => c.status === 'DRAFT').length;
 
   const getStatusBadge = (status: string) => {
@@ -144,70 +141,112 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim }) 
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Header section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white my-0 leading-none">
-            Welcome back, {user?.name.split(' ')[0]}
+          <h1 className="text-4xl font-extrabold text-[#07152f] my-0 leading-none">
+            My Claims
           </h1>
-          <p className="text-sm text-slate-500 mt-1.5">
-            Submit and track your expense reimbursement claims.
+          <p className="text-lg text-[#33476b] mt-5">
+            View and track all your expense reimbursement claims.
           </p>
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-5 rounded-xl shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/25 transition-all duration-200 cursor-pointer text-sm"
+          onClick={onCreate}
+          className="flex h-14 items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-bold px-7 rounded-[8px] shadow-lg shadow-blue-600/20 transition-all duration-200 cursor-pointer text-base"
         >
-          <Plus size={18} />
-          Create Expense Claim
+          <Plus size={22} />
+          Create New Claim
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5">
+        <div className="bg-white border border-blue-200 p-6 rounded-[8px] shadow-sm">
           <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Total Claims</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{claims.length}</h3>
-          </div>
-          <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl text-slate-600 dark:text-slate-300">
-            <FileSpreadsheet size={20} />
+            <span className="text-base text-blue-700 font-bold">Draft</span>
+            <h3 className="text-4xl font-extrabold text-[#07152f] mt-6">{draftCount}</h3>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Total Amount</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">${totalAmount.toFixed(2)}</h3>
+        {[
+          ['Submitted', 'SUBMITTED', 'border-amber-200 text-amber-700'],
+          ['Under Review', 'UNDER_REVIEW', 'border-violet-200 text-violet-700'],
+          ['Approved', 'APPROVED', 'border-emerald-200 text-emerald-700'],
+          ['Rejected', 'REJECTED', 'border-red-200 text-red-700'],
+          ['Returned', 'RETURNED_FOR_CHANGES', 'border-orange-200 text-orange-700'],
+        ].map(([label, status, classes]) => (
+          <div key={status} className={`bg-white border ${classes} p-6 rounded-[8px] shadow-sm`}>
+            <span className="text-base font-bold">{label}</span>
+            <h3 className="text-4xl font-extrabold text-[#07152f] mt-6">{claims.filter((c) => c.status === status).length}</h3>
           </div>
-          <div className="bg-indigo-50 dark:bg-indigo-950/40 p-3 rounded-xl text-indigo-600">
-            <TrendingUp size={20} />
-          </div>
-        </div>
+        ))}
+      </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Approved</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{approvedCount}</h3>
-          </div>
-          <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl text-emerald-600">
-            <CheckCircle size={20} />
-          </div>
+      <div className="grid gap-5 border-t border-slate-200 pt-7 lg:grid-cols-[1.5fr_1.2fr_1.2fr_1.3fr]">
+        <div className="relative">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#33476b]" size={24} />
+          <input placeholder="Search by title or description..." className="h-14 w-full rounded-[8px] border border-slate-200 bg-white pl-14 pr-4 outline-none" />
         </div>
+        <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5 font-bold">
+          All Statuses <ChevronDown size={20} />
+        </button>
+        <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5 font-bold">
+          All Categories <ChevronDown size={20} />
+        </button>
+        <button className="flex h-14 items-center gap-4 rounded-[8px] border border-slate-200 bg-white px-5 text-[#33476b]">
+          <CalendarDays size={22} /> Select Date Range
+        </button>
+      </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Drafts</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{draftCount}</h3>
-          </div>
-          <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl text-slate-500">
-            <FileText size={20} />
-          </div>
+      <div className="bg-white border border-slate-200 rounded-[8px] shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1050px] text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200 text-[#07152f] text-sm font-extrabold">
+                <th className="py-5 px-6">Title</th>
+                <th className="py-5 px-4">Category</th>
+                <th className="py-5 px-4">Amount</th>
+                <th className="py-5 px-4">Status</th>
+                <th className="py-5 px-4">Last Updated</th>
+                <th className="py-5 px-6 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {loading ? (
+                <tr><td colSpan={6} className="py-20 text-center"><Loader2 className="mx-auto animate-spin text-blue-600" size={32} /></td></tr>
+              ) : error ? (
+                <tr><td colSpan={6} className="py-12 text-center text-red-600">{error}</td></tr>
+              ) : claims.map((claim) => (
+                <tr key={claim.id} className="text-[#10244a] text-base hover:bg-slate-50">
+                  <td className="py-4 px-6">
+                    <div className="font-extrabold text-[#07152f]">{claim.title}</div>
+                    {claim.description && <p className="mt-1 text-sm text-[#33476b]">{claim.description}</p>}
+                  </td>
+                  <td className="py-4 px-4 font-bold">{claim.category}</td>
+                  <td className="py-4 px-4 font-extrabold">${parseFloat(claim.amount as any).toFixed(2)}</td>
+                  <td className="py-4 px-4">{getStatusBadge(claim.status)}</td>
+                  <td className="py-4 px-4">
+                    {new Date(claim.updatedAt).toLocaleDateString()}<br />
+                    <span className="text-[#33476b]">{new Date(claim.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </td>
+                  <td className="py-4 px-6 text-right">
+                    <button onClick={() => onViewClaim(claim.id)} className="rounded-[8px] border border-blue-200 px-5 py-2 font-bold text-blue-600">
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex items-center justify-between border-t border-slate-200 px-6 py-5 text-[#33476b]">
+          <span>Showing 1 to {claims.length} of {claims.length} results</span>
+          <span className="rounded-[8px] bg-blue-600 px-4 py-3 font-bold text-white">1</span>
         </div>
       </div>
 
-      {/* Claims List Table/Grid */}
+      {/* Legacy list kept unreachable while modal state is false */}
+      {false && (
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-150 dark:border-slate-800/80 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white my-0 leading-none">Your Expense Claims</h2>
@@ -286,6 +325,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim }) 
           </div>
         )}
       </div>
+      )}
 
       {/* Create Modal */}
       {isModalOpen && (
