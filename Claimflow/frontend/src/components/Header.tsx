@@ -71,19 +71,19 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
 
   return (
     <div className="min-h-screen bg-[#f7faff] text-[#07152f]">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[256px] flex-col bg-[#061f3c] px-4 py-8 text-white shadow-2xl lg:flex">
-        <button onClick={() => onNavigate('claims')} className="flex items-center gap-3 text-left">
-          <span className="flex h-12 w-12 items-center justify-center rounded-[8px] bg-blue-600 shadow-lg shadow-blue-950/40">
-            <FileText size={27} />
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[224px] flex-col bg-[#061f3c] px-3.5 py-6 text-white shadow-2xl lg:flex">
+        <button onClick={() => onNavigate('claims')} className="flex items-center gap-2.5 text-left">
+          <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-blue-600 shadow-lg shadow-blue-950/40">
+            <FileText size={23} />
           </span>
-          <span className="text-[27px] font-extrabold leading-none tracking-tight">ClaimFlow</span>
+          <span className="text-[23px] font-extrabold leading-none tracking-tight">ClaimFlow</span>
         </button>
 
-        <div className="mt-12 px-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-blue-100/70">
+        <div className="mt-10 px-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-blue-100/70">
           {user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}
         </div>
 
-        <nav className="mt-5 space-y-1.5">
+        <nav className="mt-4 space-y-1.5">
           {navByRole[user.role].map((item) => {
             const Icon = item.icon;
             const active = activeView === item.view;
@@ -91,11 +91,11 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
               <button
                 key={item.view}
                 onClick={() => onNavigate(item.view)}
-                className={`flex h-[54px] w-full items-center gap-3.5 rounded-[8px] px-3.5 text-left text-[16px] font-bold transition ${
+                className={`flex h-[48px] w-full items-center gap-3 rounded-[8px] px-3 text-left text-[15px] font-bold transition ${
                   active ? 'bg-blue-600 text-white shadow-lg shadow-blue-950/30' : 'text-white/90 hover:bg-white/10'
                 }`}
               >
-                <Icon size={22} />
+                <Icon size={20} />
                 {item.label}
               </button>
             );
@@ -103,26 +103,26 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
         </nav>
       </aside>
 
-      <main className="min-h-screen lg:pl-[256px]">
-        <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-4 shadow-sm sm:px-8 lg:px-10">
+      <main className="min-h-screen lg:pl-[224px]">
+        <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-3 shadow-sm sm:px-7 lg:px-8">
           <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6">
             <div>
-              <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
+              <h1 className="text-[28px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
             </div>
 
             <div className="relative hidden lg:block">
               <button
                 onClick={() => setIsAccountMenuOpen((open) => !open)}
-                className="flex items-center gap-3 rounded-full px-2 py-1"
+                className="flex items-center gap-2 rounded-full px-2 py-1"
               >
-                <span className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                  <span className="text-lg font-extrabold">{user.name.charAt(0)}</span>
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                  <span className="text-base font-extrabold">{user.name.charAt(0)}</span>
                 </span>
-                <ChevronDown size={20} className={`text-[#33476b] transition ${isAccountMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={18} className={`text-[#33476b] transition ${isAccountMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isAccountMenuOpen && (
-                <div className="absolute right-0 top-[72px] w-64 overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl">
+                <div className="absolute right-0 top-[62px] w-64 overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl">
                   <div className="border-b border-slate-100 px-4 py-4">
                     <div className="truncate text-[17px] font-extrabold text-[#07152f]">{user.name}</div>
                     <div className="mt-1 text-sm font-semibold text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
