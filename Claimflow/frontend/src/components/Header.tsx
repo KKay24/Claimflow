@@ -5,9 +5,7 @@ import {
   FileClock,
   FilePlus2,
   FileText,
-  Headphones,
   Home,
-  LogOut,
   User,
 } from 'lucide-react';
 
@@ -35,7 +33,7 @@ const navByRole = {
 };
 
 const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   if (!user) return <>{children}</>;
 
@@ -70,24 +68,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
               </button>
             );
           })}
-
-          <button
-            onClick={logout}
-            className="flex h-[54px] w-full items-center gap-3.5 rounded-[8px] px-3.5 text-left text-[16px] font-bold text-white/90 transition hover:bg-white/10"
-          >
-            <LogOut size={22} />
-            Logout
-          </button>
         </nav>
-
-        <div className="mt-auto rounded-[8px] border border-blue-400/30 bg-blue-950/20 p-4 text-center">
-          <Headphones className="mx-auto mb-2.5" size={28} />
-          <div className="text-[15px] font-extrabold">Need Help?</div>
-          <p className="mt-2 text-[13px] leading-5 text-blue-50/90">We&apos;re here to help you with any questions.</p>
-          <button className="mt-4 h-10 w-full rounded-[8px] border border-blue-400 text-[13px] font-bold text-blue-200">
-            Contact Support
-          </button>
-        </div>
       </aside>
 
       <main className="min-h-screen lg:pl-[256px]">
