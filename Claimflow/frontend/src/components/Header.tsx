@@ -41,19 +41,19 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
 
   return (
     <div className="min-h-screen bg-[#f7faff] text-[#07152f]">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[272px] flex-col bg-[#061f3c] px-5 py-8 text-white shadow-2xl lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[256px] flex-col bg-[#061f3c] px-4 py-8 text-white shadow-2xl lg:flex">
         <button onClick={() => onNavigate('claims')} className="flex items-center gap-3 text-left">
           <span className="flex h-12 w-12 items-center justify-center rounded-[8px] bg-blue-600 shadow-lg shadow-blue-950/40">
             <FileText size={27} />
           </span>
-          <span className="text-3xl font-extrabold tracking-tight">ClaimFlow</span>
+          <span className="text-[27px] font-extrabold leading-none tracking-tight">ClaimFlow</span>
         </button>
 
-        <div className="mt-14 text-sm font-bold uppercase tracking-widest text-blue-100/70">
+        <div className="mt-12 px-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-blue-100/70">
           {user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}
         </div>
 
-        <nav className="mt-6 space-y-2">
+        <nav className="mt-5 space-y-1.5">
           {navByRole[user.role].map((item) => {
             const Icon = item.icon;
             const active = activeView === item.view;
@@ -61,11 +61,11 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
               <button
                 key={item.view}
                 onClick={() => onNavigate(item.view)}
-                className={`flex h-14 w-full items-center gap-4 rounded-[8px] px-4 text-left text-base font-bold transition ${
+                className={`flex h-[54px] w-full items-center gap-3.5 rounded-[8px] px-3.5 text-left text-[16px] font-bold transition ${
                   active ? 'bg-blue-600 text-white shadow-lg shadow-blue-950/30' : 'text-white/90 hover:bg-white/10'
                 }`}
               >
-                <Icon size={23} />
+                <Icon size={22} />
                 {item.label}
               </button>
             );
@@ -73,25 +73,25 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
 
           <button
             onClick={logout}
-            className="flex h-14 w-full items-center gap-4 rounded-[8px] px-4 text-left text-base font-bold text-white/90 transition hover:bg-white/10"
+            className="flex h-[54px] w-full items-center gap-3.5 rounded-[8px] px-3.5 text-left text-[16px] font-bold text-white/90 transition hover:bg-white/10"
           >
-            <LogOut size={23} />
+            <LogOut size={22} />
             Logout
           </button>
         </nav>
 
-        <div className="mt-auto rounded-[8px] border border-blue-400/30 bg-blue-950/20 p-5 text-center">
-          <Headphones className="mx-auto mb-3" size={30} />
-          <div className="font-extrabold">Need Help?</div>
-          <p className="mt-2 text-sm leading-6 text-blue-50/90">We&apos;re here to help you with any questions.</p>
-          <button className="mt-4 h-11 w-full rounded-[8px] border border-blue-400 text-sm font-bold text-blue-200">
+        <div className="mt-auto rounded-[8px] border border-blue-400/30 bg-blue-950/20 p-4 text-center">
+          <Headphones className="mx-auto mb-2.5" size={28} />
+          <div className="text-[15px] font-extrabold">Need Help?</div>
+          <p className="mt-2 text-[13px] leading-5 text-blue-50/90">We&apos;re here to help you with any questions.</p>
+          <button className="mt-4 h-10 w-full rounded-[8px] border border-blue-400 text-[13px] font-bold text-blue-200">
             Contact Support
           </button>
         </div>
       </aside>
 
-      <main className="min-h-screen lg:pl-[272px]">
-        <div className="mx-auto max-w-[1510px] px-5 py-7 sm:px-8 lg:px-10">{children}</div>
+      <main className="min-h-screen lg:pl-[256px]">
+        <div className="mx-auto max-w-[1480px] px-5 py-8 sm:px-8 lg:px-10">{children}</div>
       </main>
     </div>
   );
