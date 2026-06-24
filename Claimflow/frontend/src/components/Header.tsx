@@ -109,7 +109,6 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
             {activeView === 'create' && (
               <div>
                 <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
-                <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
               </div>
             )}
 
@@ -154,12 +153,14 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
         </nav>
 
         <div className="mx-auto max-w-[1480px] px-5 py-8 sm:px-8 lg:px-10">
-          {activeView !== 'create' && (
-            <div className="mb-8">
+          <div className="mb-8">
+            {activeView !== 'create' && (
               <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
-              <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
-            </div>
-          )}
+            )}
+            <p className={activeView === 'create' ? 'text-[17px] text-[#33476b]' : 'mt-3 text-[17px] text-[#33476b]'}>
+              {currentPage.subtitle}
+            </p>
+          </div>
           {children}
         </div>
       </main>
