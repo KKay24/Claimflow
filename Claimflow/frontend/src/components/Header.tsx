@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   ChevronDown,
@@ -7,6 +7,7 @@ import {
   FilePlus2,
   FileText,
   Home,
+  LogOut,
   User,
 } from 'lucide-react';
 
@@ -22,19 +23,18 @@ const navByRole = {
   APPLICANT: [
     { view: 'claims' as AppView, label: 'My Claims', icon: Home },
     { view: 'create' as AppView, label: 'Create Claim', icon: FilePlus2 },
-    { view: 'profile' as AppView, label: 'My Profile', icon: User },
     { view: 'audit' as AppView, label: 'Audit History', icon: FileClock },
   ],
   REVIEWER: [
     { view: 'dashboard' as AppView, label: 'Dashboard', icon: Home },
     { view: 'claims' as AppView, label: 'Review Claims', icon: ClipboardList },
     { view: 'audit' as AppView, label: 'Audit History', icon: FileClock },
-    { view: 'profile' as AppView, label: 'My Profile', icon: User },
   ],
 };
 
 const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   if (!user) return <>{children}</>;
 
@@ -111,8 +111,12 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
               <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
             </div>
 
-            <div className="hidden items-center gap-3 rounded-full px-2 py-1 lg:flex">
-              <div className="flex h-[58px] min-w-[210px] items-center gap-3 rounded-full bg-white">
+            <div className="relative hidden lg:block">
+              <button
+                onClick={() => setIsAccountMenuOpen((open) => !open)}
+                className="flex items-center gap-3 rounded-full px-2 py-1"
+              >
+                <span className="flex h-[58px] min-w-[210px] items-center gap-3 rounded-full bg-white">
                 <span className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
                   <span className="text-lg font-extrabold">{user.name.charAt(0)}</span>
                 </span>
@@ -120,8 +124,31 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
                   <span className="block truncate text-[18px] font-extrabold leading-tight">{user.name}</span>
                   <span className="block text-[17px] leading-tight text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</span>
                 </span>
-              </div>
-              <ChevronDown size={20} className="text-[#33476b]" />
+                </span>
+                <ChevronDown size={20} className={`text-[#33476b] transition ${isAccountMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isAccountMenuOpen && (
+                <div className="absolute right-0 top-[72px] w-64 overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl">
+                  <button
+                    onClick={() => {
+                      setIsAccountMenuOpen(false);
+                      onNavigate('profile');
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-4 text-left font-bold text-[#07152f] hover:bg-blue-50"
+                  >
+                    <User size={20} className="text-blue-600" />
+                    My Profile
+                  </button>
+                  <button
+                    onClick={logout}
+                    className="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-4 text-left font-bold text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut size={20} />
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </nav>
