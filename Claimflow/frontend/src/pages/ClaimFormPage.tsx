@@ -61,7 +61,7 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
 
   return (
     <div>
-      <div className="mb-9 flex items-start justify-between gap-6">
+      <nav className="-mx-5 -mt-8 mb-9 flex min-h-[116px] items-center justify-between gap-6 border-b border-slate-200 bg-white px-5 py-6 shadow-sm sm:-mx-8 sm:px-8 lg:-mx-10 lg:px-10">
         <div>
           <h1 className="text-[32px] font-extrabold leading-tight tracking-tight text-[#07152f]">Create / Edit Claim</h1>
           <p className="mt-3 text-[17px] text-[#33476b]">Fill in the details below to create a new claim or update your draft.</p>
@@ -76,7 +76,7 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
           </div>
           <ChevronDown size={20} className="text-[#33476b]" />
         </div>
-      </div>
+      </nav>
 
       <section className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-9 flex flex-col justify-between gap-4 sm:flex-row">
