@@ -6,6 +6,7 @@ import {
   FilePlus2,
   FileText,
   Home,
+  LogOut,
   User,
 } from 'lucide-react';
 
@@ -33,7 +34,7 @@ const navByRole = {
 };
 
 const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   if (!user) return <>{children}</>;
 
@@ -68,6 +69,14 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
               </button>
             );
           })}
+
+          <button
+            onClick={logout}
+            className="flex h-[54px] w-full items-center gap-3.5 rounded-[8px] px-3.5 text-left text-[16px] font-bold text-white/90 transition hover:bg-white/10"
+          >
+            <LogOut size={22} />
+            Logout
+          </button>
         </nav>
       </aside>
 
