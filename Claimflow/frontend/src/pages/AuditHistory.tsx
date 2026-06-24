@@ -96,7 +96,7 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
   return (
     <div>
       <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 xl:grid-cols-[1.5fr_1fr_1fr_1fr_1.25fr_auto]">
+        <div className="flex max-w-md flex-col gap-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" size={22} />
             <input
