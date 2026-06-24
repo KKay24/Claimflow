@@ -116,20 +116,18 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
                 onClick={() => setIsAccountMenuOpen((open) => !open)}
                 className="flex items-center gap-3 rounded-full px-2 py-1"
               >
-                <span className="flex h-[58px] min-w-[210px] items-center gap-3 rounded-full bg-white">
                 <span className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
                   <span className="text-lg font-extrabold">{user.name.charAt(0)}</span>
-                </span>
-                <span className="min-w-0 pr-2">
-                  <span className="block truncate text-[18px] font-extrabold leading-tight">{user.name}</span>
-                  <span className="block text-[17px] leading-tight text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</span>
-                </span>
                 </span>
                 <ChevronDown size={20} className={`text-[#33476b] transition ${isAccountMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isAccountMenuOpen && (
                 <div className="absolute right-0 top-[72px] w-64 overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl">
+                  <div className="border-b border-slate-100 px-4 py-4">
+                    <div className="truncate text-[17px] font-extrabold text-[#07152f]">{user.name}</div>
+                    <div className="mt-1 text-sm font-semibold text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
+                  </div>
                   <button
                     onClick={() => {
                       setIsAccountMenuOpen(false);
