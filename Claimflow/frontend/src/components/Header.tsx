@@ -111,13 +111,15 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
               <p className="mt-3 text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
             </div>
 
-            <div className="hidden items-center gap-4 lg:flex">
-              <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-blue-600 text-white">
-                <span className="text-lg font-extrabold">{user.name.charAt(0)}</span>
-              </div>
-              <div>
-                <div className="text-[18px] font-extrabold leading-tight">{user.name}</div>
-                <div className="text-[17px] text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
+            <div className="hidden items-center gap-3 rounded-full px-2 py-1 lg:flex">
+              <div className="flex h-[58px] min-w-[210px] items-center gap-3 rounded-full bg-white">
+                <span className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                  <span className="text-lg font-extrabold">{user.name.charAt(0)}</span>
+                </span>
+                <span className="min-w-0 pr-2">
+                  <span className="block truncate text-[18px] font-extrabold leading-tight">{user.name}</span>
+                  <span className="block text-[17px] leading-tight text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</span>
+                </span>
               </div>
               <ChevronDown size={20} className="text-[#33476b]" />
             </div>
