@@ -152,34 +152,34 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
         })}
       </div>
 
-      <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="grid items-center gap-4 xl:grid-cols-[minmax(260px,1.6fr)_190px_190px_260px_150px_150px]">
+      <section className="max-w-full overflow-hidden rounded-[8px] border border-slate-200 bg-white p-3 shadow-sm">
+        <div className="grid items-center gap-3 xl:grid-cols-[190px_140px_150px_220px_112px_108px]">
           <div className="relative">
-            <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" />
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#33476b]" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by title, applicant or ID..."
-              className="h-12 w-full rounded-[8px] border border-slate-200 bg-white pl-12 pr-4 text-[13px] outline-none focus:border-blue-500"
+              className="h-11 w-full rounded-[8px] border border-slate-200 bg-white pl-10 pr-3 text-[12px] outline-none focus:border-blue-500"
             />
           </div>
-          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-[13px] font-extrabold">
-            All Statuses <ChevronDown size={18} />
+          <button className="flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3 text-[12px] font-extrabold">
+            All Statuses <ChevronDown size={16} />
           </button>
-          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-[13px] font-extrabold">
-            All Categories <ChevronDown size={18} />
+          <button className="flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3 text-[12px] font-extrabold">
+            All Categories <ChevronDown size={16} />
           </button>
-          <button className="flex h-14 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-left text-[13px] font-extrabold">
-            <CalendarDays size={20} />
+          <button className="flex h-11 items-center gap-2 rounded-[8px] border border-slate-200 px-3 text-left text-[12px] font-extrabold">
+            <CalendarDays size={17} />
             <span className="min-w-0 leading-tight">
-              <span className="block text-[11px] text-[#33476b]">Date Range</span>
+              <span className="block text-[10px] text-[#33476b]">Date Range</span>
               <span className="block whitespace-nowrap">01 May 2024 - 12 May 2024</span>
             </span>
-            <ChevronDown size={18} className="ml-auto" />
+            <ChevronDown size={16} className="ml-auto" />
           </button>
-          <button className="h-14 rounded-[8px] border border-slate-200 px-5 text-[13px] font-extrabold text-[#33476b]">Clear Filters</button>
-          <button className="flex h-14 items-center justify-center gap-3 rounded-[8px] bg-blue-600 px-5 text-[13px] font-extrabold text-white">
-            <Download size={19} />
+          <button className="h-11 rounded-[8px] border border-slate-200 px-3 text-[12px] font-extrabold text-[#33476b]">Clear Filters</button>
+          <button className="flex h-11 items-center justify-center gap-2 rounded-[8px] bg-blue-600 px-3 text-[12px] font-extrabold text-white">
+            <Download size={17} />
             Export
           </button>
         </div>
