@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
   AlertCircle,
+  ArrowRight,
+  CalendarDays,
   CheckCircle,
-  Eye,
+  ChevronDown,
+  Download,
   FileSpreadsheet,
   Loader2,
+  RotateCcw,
   Search,
+  Send,
   ShieldCheck,
   Timer,
   XCircle,
@@ -34,29 +39,17 @@ interface ReviewerDashboardProps {
   onViewClaim: (id: string) => void;
 }
 
-const statusFilters = [
-  { label: 'All', value: '' },
-  { label: 'Submitted', value: 'SUBMITTED' },
-  { label: 'Under Review', value: 'UNDER_REVIEW' },
-  { label: 'Approved', value: 'APPROVED' },
-  { label: 'Rejected', value: 'REJECTED' },
-  { label: 'Returned', value: 'RETURNED_FOR_CHANGES' },
-];
-
 const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) => {
   const [claims, setClaims] = useState<Application[]>([]);
-  const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchClaims = async (selectedStatus = status) => {
+  const fetchClaims = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/reviewer/applications', {
-        params: selectedStatus ? { status: selectedStatus } : {},
-      });
+      const response = await api.get('/reviewer/applications');
       setClaims(response.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch reviewer claims.');
@@ -66,8 +59,8 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
   };
 
   useEffect(() => {
-    fetchClaims(status);
-  }, [status]);
+    fetchClaims();
+  }, []);
 
   const filteredClaims = claims.filter((claim) => {
     const query = search.trim().toLowerCase();
@@ -87,105 +80,116 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
   const reviewCount = claims.filter((claim) => claim.status === 'UNDER_REVIEW').length;
   const approvedCount = claims.filter((claim) => claim.status === 'APPROVED').length;
   const rejectedCount = claims.filter((claim) => claim.status === 'REJECTED').length;
+  const returnedCount = claims.filter((claim) => claim.status === 'RETURNED_FOR_CHANGES').length;
+  const totalCount = claims.length;
 
   const getStatusBadge = (claimStatus: string) => {
-    const base = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ';
+    const base = 'inline-flex rounded-[6px] border px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide ';
     switch (claimStatus) {
       case 'SUBMITTED':
-        return <span className={base + 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'}>Submitted</span>;
+        return <span className={base + 'border-amber-200 bg-amber-50 text-amber-700'}>Submitted</span>;
       case 'UNDER_REVIEW':
-        return <span className={base + 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'}>Under Review</span>;
+        return <span className={base + 'border-violet-200 bg-violet-50 text-violet-700'}>Under Review</span>;
       case 'APPROVED':
-        return <span className={base + 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'}>Approved</span>;
+        return <span className={base + 'border-emerald-200 bg-emerald-50 text-emerald-700'}>Approved</span>;
       case 'REJECTED':
-        return <span className={base + 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'}>Rejected</span>;
+        return <span className={base + 'border-red-200 bg-red-50 text-red-700'}>Rejected</span>;
       case 'RETURNED_FOR_CHANGES':
-        return <span className={base + 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'}>Returned</span>;
+        return <span className={base + 'border-orange-200 bg-orange-50 text-orange-700'}>Returned</span>;
       default:
-        return <span className={base + 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}>{claimStatus}</span>;
+        return <span className={base + 'border-slate-200 bg-slate-100 text-slate-700'}>{claimStatus}</span>;
     }
   };
 
+  const categoryBadge = (category: string) => {
+    const palette: Record<string, string> = {
+      TRAVEL: 'border-blue-200 bg-blue-50 text-blue-700',
+      INTERNET: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+      MEALS: 'border-orange-200 bg-orange-50 text-orange-700',
+      FUEL: 'border-red-200 bg-red-50 text-red-700',
+      EQUIPMENT: 'border-violet-200 bg-violet-50 text-violet-700',
+    };
+    return (
+      <span className={`inline-flex rounded-[6px] border px-3 py-1 text-xs font-extrabold ${palette[category] || 'border-slate-200 bg-slate-50 text-slate-700'}`}>
+        {category.replaceAll('_', ' ')}
+      </span>
+    );
+  };
+
+  const statCards = [
+    { label: 'Total Claims', value: totalCount, caption: 'All time', icon: FileSpreadsheet, classes: 'border-blue-200 text-blue-700 bg-blue-50' },
+    { label: 'Submitted', value: submittedCount, caption: 'Awaiting review', icon: Send, classes: 'border-amber-200 text-amber-700 bg-amber-50' },
+    { label: 'Under Review', value: reviewCount, caption: 'In progress', icon: Timer, classes: 'border-violet-200 text-violet-700 bg-violet-50' },
+    { label: 'Approved', value: approvedCount, caption: 'Completed', icon: CheckCircle, classes: 'border-emerald-200 text-emerald-700 bg-emerald-50' },
+    { label: 'Rejected', value: rejectedCount, caption: 'Completed', icon: XCircle, classes: 'border-red-200 text-red-700 bg-red-50' },
+    { label: 'Returned', value: returnedCount, caption: 'Sent back', icon: RotateCcw, classes: 'border-orange-200 text-orange-700 bg-orange-50' },
+  ];
+
+  const recentClaims = filteredClaims.slice(0, 5);
+  const percentage = (count: number) => (totalCount ? Math.round((count / totalCount) * 100) : 0);
+
   return (
-    <div className="w-full space-y-8">
-      <div className="flex justify-end lg:-mt-[68px] lg:mb-4">
-        <div className="relative w-full lg:w-[360px]">
-          <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search claims or applicants"
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-indigo-500"
-          />
-        </div>
+    <div className="w-full space-y-6">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-6">
+        {statCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <section key={card.label} className={`rounded-[8px] border bg-white p-5 shadow-sm ${card.classes}`}>
+              <div className="flex items-start gap-4">
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
+                  <Icon size={24} />
+                </span>
+                <div>
+                  <h3 className="text-base font-extrabold">{card.label}</h3>
+                  <div className="mt-2 text-[28px] font-extrabold text-[#07152f]">{card.value}</div>
+                  <p className="mt-1 text-sm font-medium text-[#33476b]">{card.caption}</p>
+                </div>
+              </div>
+            </section>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Submitted</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{submittedCount}</h3>
+      <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="grid gap-4 xl:grid-cols-[1.5fr_0.85fr_0.85fr_1.1fr_auto_auto]">
+          <div className="relative">
+            <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by title, applicant or ID..."
+              className="h-12 w-full rounded-[8px] border border-slate-200 bg-white pl-12 pr-4 text-sm outline-none focus:border-blue-500"
+            />
           </div>
-          <div className="bg-blue-50 dark:bg-blue-950/40 p-3 rounded-xl text-blue-600">
-            <FileSpreadsheet size={20} />
-          </div>
+          <button className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+            All Statuses <ChevronDown size={18} />
+          </button>
+          <button className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+            All Categories <ChevronDown size={18} />
+          </button>
+          <button className="flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+            <CalendarDays size={20} />
+            <span>
+              <span className="block text-xs text-[#33476b]">Date Range</span>
+              01 May 2024 - 12 May 2024
+            </span>
+            <ChevronDown size={18} className="ml-auto" />
+          </button>
+          <button className="h-12 rounded-[8px] border border-slate-200 px-5 text-sm font-extrabold text-[#33476b]">Clear Filters</button>
+          <button className="flex h-12 items-center gap-3 rounded-[8px] bg-blue-600 px-5 text-sm font-extrabold text-white">
+            <Download size={19} />
+            Export
+          </button>
         </div>
+      </section>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Under Review</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{reviewCount}</h3>
-          </div>
-          <div className="bg-amber-50 dark:bg-amber-950/40 p-3 rounded-xl text-amber-600">
-            <Timer size={20} />
-          </div>
+      <section className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between px-5 py-4">
+          <h2 className="text-lg font-extrabold text-[#07152f]">Recent Claims</h2>
+          <button className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+            View all claims <ArrowRight size={18} />
+          </button>
         </div>
-
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Approved</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{approvedCount}</h3>
-          </div>
-          <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl text-emerald-600">
-            <CheckCircle size={20} />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-          <div className="space-y-1">
-            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Rejected</span>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{rejectedCount}</h3>
-          </div>
-          <div className="bg-rose-50 dark:bg-rose-950/40 p-3 rounded-xl text-rose-600">
-            <XCircle size={20} />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/80 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white my-0 leading-none">Claims queue</h2>
-            <span className="text-xs font-semibold text-slate-400">{filteredClaims.length} claim(s) shown</span>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {statusFilters.map((filter) => (
-              <button
-                key={filter.label}
-                onClick={() => setStatus(filter.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
-                  status === filter.value
-                    ? 'bg-indigo-600 border-indigo-600 text-white'
-                    : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-500 hover:text-indigo-600'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="animate-spin text-indigo-600" size={32} />
@@ -208,50 +212,44 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800/60 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
-                  <th className="py-4 px-6">Claim</th>
-                  <th className="py-4 px-4">Applicant</th>
-                  <th className="py-4 px-4">Category</th>
-                  <th className="py-4 px-4">Amount</th>
-                  <th className="py-4 px-4">Status</th>
-                  <th className="py-4 px-6 text-right">Action</th>
+            <table className="w-full min-w-[1050px] border-collapse text-left">
+              <thead className="border-y border-slate-200 bg-slate-50 text-sm font-extrabold text-[#07152f]">
+                <tr>
+                  <th className="px-5 py-4">Claim ID</th>
+                  <th className="px-5 py-4">Title</th>
+                  <th className="px-5 py-4">Applicant</th>
+                  <th className="px-5 py-4">Category</th>
+                  <th className="px-5 py-4">Amount</th>
+                  <th className="px-5 py-4">Status</th>
+                  <th className="px-5 py-4">Submitted On</th>
+                  <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {filteredClaims.map((claim) => (
-                  <tr
-                    key={claim.id}
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-colors text-slate-700 dark:text-slate-300 text-sm group"
-                  >
-                    <td className="py-4 px-6">
-                      <div className="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">
-                        {claim.title}
-                      </div>
-                      {claim.description && (
-                        <p className="text-xs text-slate-400 truncate max-w-xs mt-0.5">
-                          {claim.description}
-                        </p>
-                      )}
+              <tbody className="divide-y divide-slate-200">
+                {recentClaims.map((claim) => (
+                  <tr key={claim.id} className="text-sm text-[#10244a] hover:bg-slate-50">
+                    <td className="px-5 py-4 font-extrabold text-blue-600">CLM-{claim.id.slice(0, 8)}</td>
+                    <td className="px-5 py-4">
+                      <div className="font-extrabold text-[#07152f]">{claim.title}</div>
+                      {claim.description && <p className="mt-1 text-[#33476b]">{claim.description}</p>}
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="text-xs font-bold text-slate-700 dark:text-slate-200">
-                        {claim.applicant?.name || 'Unknown'}
-                      </div>
-                      <div className="text-[10px] text-slate-400">{claim.applicant?.email}</div>
+                    <td className="px-5 py-4">
+                      <div className="font-extrabold">{claim.applicant?.name || 'Unknown'}</div>
+                      <div className="text-[#33476b]">{claim.applicant?.email}</div>
                     </td>
-                    <td className="py-4 px-4 text-xs font-bold text-slate-400">{claim.category}</td>
-                    <td className="py-4 px-4 font-bold text-slate-900 dark:text-slate-200">
-                      ${parseFloat(claim.amount as any).toFixed(2)}
+                    <td className="px-5 py-4">{categoryBadge(claim.category)}</td>
+                    <td className="px-5 py-4 font-extrabold">USD {parseFloat(claim.amount as any).toFixed(2)}</td>
+                    <td className="px-5 py-4">{getStatusBadge(claim.status)}</td>
+                    <td className="px-5 py-4">
+                      {new Date(claim.createdAt).toLocaleDateString()}<br />
+                      <span className="text-[#33476b]">{new Date(claim.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>
-                    <td className="py-4 px-4">{getStatusBadge(claim.status)}</td>
-                    <td className="py-4 px-6 text-right">
+                    <td className="px-5 py-4 text-right">
                       <button
                         onClick={() => onViewClaim(claim.id)}
-                        className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-indigo-600 hover:font-bold dark:text-slate-400 dark:hover:text-white cursor-pointer transition-colors"
+                        className="rounded-[8px] border border-blue-200 px-5 py-2 text-sm font-extrabold text-blue-600"
                       >
-                        <Eye size={14} /> Review
+                        {claim.status === 'SUBMITTED' ? 'Start Review' : 'View'}
                       </button>
                     </td>
                   </tr>
@@ -260,6 +258,81 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
             </table>
           </div>
         )}
+        <div className="flex items-center justify-between border-t border-slate-200 px-5 py-4 text-sm text-[#33476b]">
+          <span>Showing 1 to {recentClaims.length} of {filteredClaims.length} results</span>
+          <div className="flex items-center gap-3">
+            <span className="rounded-[8px] bg-blue-600 px-4 py-3 font-extrabold text-white">1</span>
+            <span className="rounded-[8px] border border-slate-200 px-4 py-3 font-extrabold">2</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-5 xl:grid-cols-[1fr_1fr]">
+        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-extrabold text-[#07152f]">Claims by Status</h2>
+          <div className="mt-6 grid gap-6 md:grid-cols-[220px_1fr] md:items-center">
+            <div
+              className="mx-auto flex h-40 w-40 items-center justify-center rounded-full"
+              style={{
+                background: 'conic-gradient(#7c3aed 0 21%, #f59e0b 21% 51%, #10b981 51% 86%, #ef4444 86% 95%, #fb923c 95% 100%)',
+              }}
+            >
+              <div className="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white text-center">
+                <span className="text-2xl font-extrabold text-[#07152f]">{totalCount}</span>
+                <span className="text-xs font-semibold text-[#33476b]">Total</span>
+              </div>
+            </div>
+            <div className="space-y-3 text-sm">
+              {[
+                ['Under Review', reviewCount, 'bg-violet-600'],
+                ['Submitted', submittedCount, 'bg-amber-500'],
+                ['Approved', approvedCount, 'bg-emerald-500'],
+                ['Rejected', rejectedCount, 'bg-red-500'],
+                ['Returned', returnedCount, 'bg-orange-400'],
+              ].map(([label, count, dot]) => (
+                <div key={label as string} className="grid grid-cols-[1fr_auto] items-center gap-4">
+                  <span className="flex items-center gap-3 font-bold text-[#10244a]">
+                    <span className={`h-3 w-3 rounded-full ${dot}`} />
+                    {label}
+                  </span>
+                  <span className="text-[#33476b]">{count} ({percentage(count as number)}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold text-[#07152f]">My Review Activity</h2>
+            <button className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+              View full activity <ArrowRight size={18} />
+            </button>
+          </div>
+          <div className="mt-5 divide-y divide-slate-200">
+            {[
+              ['Moved to Under Review', 'CLM-2024-0052 · Flight to Nairobi', '12 May 2024, 02:15 PM', Timer, 'bg-violet-100 text-violet-700'],
+              ['Approved', 'CLM-2024-0048 · Office Chair', '09 May 2024, 04:10 PM', CheckCircle, 'bg-emerald-100 text-emerald-700'],
+              ['Returned for Changes', 'CLM-2024-0045 · Hotel Accommodation', '08 May 2024, 03:05 PM', RotateCcw, 'bg-orange-100 text-orange-700'],
+            ].map(([title, detail, date, Icon, classes]) => {
+              const ActivityIcon = Icon as typeof Timer;
+              return (
+                <div key={title as string} className="flex items-center justify-between gap-4 py-4">
+                  <div className="flex items-center gap-4">
+                    <span className={`flex h-10 w-10 items-center justify-center rounded-full ${classes}`}>
+                      <ActivityIcon size={20} />
+                    </span>
+                    <div>
+                      <div className="font-extrabold text-[#07152f]">{title as string}</div>
+                      <div className="text-sm text-[#33476b]">{detail as string}</div>
+                    </div>
+                  </div>
+                  <span className="text-sm text-[#33476b]">{date as string}</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </div>
   );
