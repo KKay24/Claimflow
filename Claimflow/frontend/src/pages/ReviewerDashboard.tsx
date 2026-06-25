@@ -227,7 +227,19 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {recentClaims.map((claim) => (
-                  <tr key={claim.id} className="text-sm text-[#10244a] hover:bg-slate-50">
+                  <tr
+                    key={claim.id}
+                    onClick={() => onViewClaim(claim.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onViewClaim(claim.id);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    className="cursor-pointer text-sm text-[#10244a] transition hover:bg-slate-50 focus:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                  >
                     <td className="px-5 py-4 font-extrabold text-blue-600">CLM-{claim.id.slice(0, 8)}</td>
                     <td className="px-5 py-4">
                       <div className="font-extrabold text-[#07152f]">{claim.title}</div>
@@ -246,7 +258,10 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                     </td>
                     <td className="px-5 py-4 text-right">
                       <button
-                        onClick={() => onViewClaim(claim.id)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onViewClaim(claim.id);
+                        }}
                         className="rounded-[8px] border border-blue-200 px-5 py-2 text-sm font-extrabold text-blue-600"
                       >
                         {claim.status === 'SUBMITTED' ? 'Start Review' : 'View'}
