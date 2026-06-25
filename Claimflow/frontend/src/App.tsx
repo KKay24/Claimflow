@@ -34,7 +34,7 @@ function ClaimFlowApp() {
   }
 
   return (
-    <Header activeView={activeView} onNavigate={navigate}>
+    <Header activeView={activeView} onNavigate={navigate} hidePageCopy={Boolean(selectedClaimId)}>
       {selectedClaimId ? (
         <ClaimDetail
           claimId={selectedClaimId}

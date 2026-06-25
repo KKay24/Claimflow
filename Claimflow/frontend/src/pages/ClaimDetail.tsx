@@ -9,11 +9,16 @@ import {
   Clock,
   Download,
   AlertTriangle,
-  CornerUpLeft,
   Edit2,
   Send,
   Loader2,
   Paperclip,
+  Copy,
+  Info,
+  Tag,
+  CheckCircle2,
+  Flag,
+  Plane,
 } from 'lucide-react';
 
 interface Attachment {
@@ -187,15 +192,15 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
       case 'DRAFT':
         return <span className={base + "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}>Draft</span>;
       case 'SUBMITTED':
-        return <span className={base + "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"}>Submitted</span>;
+        return <span className={base + "bg-amber-50 text-amber-700 border border-amber-200"}>Submitted</span>;
       case 'UNDER_REVIEW':
-        return <span className={base + "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"}>Under Review</span>;
+        return <span className={base + "bg-violet-50 text-violet-700 border border-violet-200"}>Under Review</span>;
       case 'APPROVED':
         return <span className={base + "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"}>Approved</span>;
       case 'REJECTED':
         return <span className={base + "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"}>Rejected</span>;
       case 'RETURNED_FOR_CHANGES':
-        return <span className={base + "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"}>Returned for Changes</span>;
+        return <span className={base + "bg-orange-50 text-orange-700 border border-orange-200"}>Returned for Changes</span>;
       default:
         return <span className={base + "bg-slate-100 text-slate-700"}>{status}</span>;
     }
@@ -208,6 +213,30 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
+
+  const formatShortDateTime = (date: string) =>
+    new Date(date).toLocaleString(undefined, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+  const formatDateOnly = (date: string) =>
+    new Date(date).toLocaleDateString(undefined, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+
+  const statusOrder = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'COMPLETED'];
+  const progressStatus = claim?.status === 'REJECTED' ? 'APPROVED' : claim?.status === 'RETURNED_FOR_CHANGES' ? 'UNDER_REVIEW' : claim?.status;
+  const currentProgressIndex = Math.max(0, statusOrder.indexOf(progressStatus || 'DRAFT'));
+
+  const auditRows = [...(claim?.auditLogs || [])].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   if (loading) {
     return (
@@ -235,6 +264,293 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     );
   }
 
+  if (user?.role === 'APPLICANT') {
+    const progressSteps = [
+      { status: 'DRAFT', label: 'Draft', icon: CheckCircle2, date: claim.createdAt },
+      { status: 'SUBMITTED', label: 'Submitted', icon: Plane, date: claim.updatedAt },
+      { status: 'UNDER_REVIEW', label: 'Under Review', icon: Clock },
+      { status: 'APPROVED', label: 'Approved / Rejected', icon: CheckCircle2 },
+      { status: 'COMPLETED', label: 'Completed', icon: Flag },
+    ];
+
+    return (
+      <div className="w-full space-y-5">
+        <div>
+          <button onClick={onBack} className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+            <ArrowLeft size={17} /> Back to My Claims
+          </button>
+          <h1 className="mt-5 text-[30px] font-extrabold leading-tight text-[#07152f]">Claim Details</h1>
+          <p className="mt-2 text-[17px] text-[#33476b]">View the details and progress of your claim.</p>
+        </div>
+
+        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-5">
+              <span className="flex h-20 w-20 items-center justify-center rounded-[8px] bg-violet-100 text-violet-700">
+                <Plane size={42} />
+              </span>
+              <div>
+                <h2 className="text-[26px] font-extrabold text-[#07152f]">{claim.title}</h2>
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-[#10244a]">
+                  <span className="rounded-[6px] bg-blue-50 px-3 py-1 font-bold text-blue-600">{claim.category}</span>
+                  <span>Claim ID: {claim.id.slice(0, 13)}</span>
+                  <Copy size={16} className="text-[#33476b]" />
+                </div>
+              </div>
+            </div>
+
+            <div className="text-left lg:text-right">
+              {getStatusBadge(claim.status)}
+              <div className="mt-4 text-sm font-bold text-[#33476b]">Submitted on</div>
+              <div className="mt-1 text-base font-semibold text-[#07152f]">{formatShortDateTime(claim.createdAt)}</div>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid gap-5 xl:grid-cols-[1.7fr_1.05fr]">
+          <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="grid gap-8 lg:grid-cols-2">
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <FileText size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Description</h3>
+                    <p className="mt-2 text-sm text-[#10244a]">{claim.description || 'No description provided.'}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <Tag size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Category</h3>
+                    <p className="mt-2 text-sm text-[#10244a]">{claim.category}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                    <DollarSign size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Amount</h3>
+                    <p className="mt-2 text-base font-semibold text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <Calendar size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Date of Expense</h3>
+                    <p className="mt-2 text-sm text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-8 border-slate-200 lg:border-l lg:pl-8">
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <Paperclip size={18} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Attachment</h3>
+                    {claim.attachment ? (
+                      <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-extrabold text-[#07152f]">{claim.attachment.fileName}</div>
+                          <div className="text-xs text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
+                        </div>
+                        <a
+                          href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-3 rounded-[8px] border border-slate-200 p-2 text-blue-600"
+                        >
+                          <Download size={18} />
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-sm text-[#33476b]">No attachment uploaded.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <FileText size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Notes (Optional)</h3>
+                    <p className="mt-2 text-sm text-[#33476b]">-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-base font-extrabold text-[#07152f]">Claim Information</h3>
+            <dl className="mt-6 space-y-5 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Status</dt>
+                <dd>{getStatusBadge(claim.status)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Submitted On</dt>
+                <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Last Updated</dt>
+                <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.updatedAt)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Created On</dt>
+                <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+
+        <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-base font-extrabold text-[#07152f]">Claim Status Progress</h3>
+          <div className="mt-8 grid grid-cols-5 items-start">
+            {progressSteps.map((step, index) => {
+              const Icon = step.icon;
+              const complete = index < currentProgressIndex;
+              const active = index === currentProgressIndex;
+              return (
+                <div key={step.status} className="relative text-center">
+                  {index > 0 && <div className={`absolute right-1/2 top-5 h-0.5 w-full ${index <= currentProgressIndex ? 'bg-emerald-400' : 'bg-slate-200'}`} />}
+                  <span
+                    className={`relative z-10 mx-auto flex h-11 w-11 items-center justify-center rounded-full border-4 ${
+                      complete
+                        ? 'border-emerald-100 bg-emerald-500 text-white'
+                        : active
+                          ? 'border-amber-100 bg-amber-500 text-white'
+                          : 'border-slate-100 bg-slate-100 text-slate-400'
+                    }`}
+                  >
+                    <Icon size={22} />
+                  </span>
+                  <div className="mt-3 text-sm font-extrabold text-[#07152f]">{step.label}</div>
+                  <div className="mt-1 text-xs text-[#33476b]">{step.date ? formatShortDateTime(step.date) : ''}</div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="px-2 text-lg font-extrabold text-[#07152f]">Audit History</h3>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[940px] text-left text-sm">
+              <thead className="border-y border-slate-200 text-[#33476b]">
+                <tr>
+                  <th className="px-4 py-3">Date & Time</th>
+                  <th className="px-4 py-3">Action</th>
+                  <th className="px-4 py-3">Status Change</th>
+                  <th className="px-4 py-3">Comment</th>
+                  <th className="px-4 py-3">By</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {auditRows.map((log) => (
+                  <tr key={log.id}>
+                    <td className="px-4 py-4">
+                      <span className="mr-4 inline-block h-3 w-3 rounded-full bg-emerald-500" />
+                      {formatShortDateTime(log.createdAt)}
+                    </td>
+                    <td className="px-4 py-4 font-medium text-[#10244a]">
+                      {log.oldStatus ? 'Claim submitted' : 'Claim created'}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        {getStatusBadge(log.oldStatus || 'NEW')}
+                        <span>→</span>
+                        {getStatusBadge(log.newStatus)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-[#10244a]">{log.comment || 'Initial claim created'}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-extrabold text-blue-700">
+                          {log.user?.name?.charAt(0) || user.name.charAt(0)}
+                        </span>
+                        <span>
+                          <span className="block font-extrabold text-[#07152f]">{log.user?.name || user.name}</span>
+                          <span className="text-[#33476b]">({log.user?.role || 'Applicant'})</span>
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 flex items-start gap-3 rounded-[8px] border border-blue-100 bg-blue-50 px-5 py-4 text-[#10244a]">
+            <Info size={20} className="mt-0.5 shrink-0 text-blue-600" />
+            <div>
+              <div className="font-extrabold text-blue-700">Note</div>
+              <p className="mt-1 text-sm">You will be notified once your claim is reviewed by the finance team.</p>
+            </div>
+          </div>
+        </section>
+
+        {claim.status === 'DRAFT' && (
+          <div className="flex justify-end gap-3">
+            <button onClick={openEditModal} className="rounded-[8px] border border-slate-200 px-5 py-3 text-sm font-extrabold text-[#07152f]">
+              <Edit2 size={16} className="mr-2 inline" />
+              Edit Draft
+            </button>
+            <button
+              onClick={() => handleStatusTransition('SUBMITTED')}
+              disabled={submittingAction}
+              className="rounded-[8px] bg-blue-600 px-5 py-3 text-sm font-extrabold text-white disabled:opacity-50"
+            >
+              {submittingAction ? <Loader2 size={16} className="mr-2 inline animate-spin" /> : <Send size={16} className="mr-2 inline" />}
+              Submit Claim
+            </button>
+          </div>
+        )}
+
+        {isEditModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+              <h3 className="mb-4 text-lg font-bold text-white">Edit Expense Claim</h3>
+              {editError && <div className="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">{editError}</div>}
+              <form onSubmit={handleUpdateClaim} className="space-y-4">
+                <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" required />
+                <div className="grid grid-cols-2 gap-4">
+                  <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" required>
+                    <option value="TRAVEL">Travel</option>
+                    <option value="FUEL">Fuel</option>
+                    <option value="INTERNET">Internet</option>
+                    <option value="MEALS">Meals</option>
+                    <option value="EQUIPMENT">Equipment</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                  <input type="number" step="0.01" min="0.01" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" required />
+                </div>
+                <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={3} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" />
+                <input type="file" onChange={(e) => setEditFile(e.target.files ? e.target.files[0] : null)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2 text-xs text-slate-300 outline-none" />
+                <div className="flex justify-end gap-3 pt-4">
+                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="rounded-lg border border-slate-800 px-4 py-2 text-sm text-slate-400 hover:text-white">Cancel</button>
+                  <button type="submit" disabled={updatingClaim} className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-bold text-white disabled:opacity-50">
+                    {updatingClaim && <Loader2 size={14} className="animate-spin" />}
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Top Bar */}
@@ -243,38 +559,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <ArrowLeft size={18} /> Back to dashboard
         </button>
 
-        <div className="flex items-center gap-3">
-          {claim.status === 'DRAFT' && user?.role === 'APPLICANT' && (
-            <button
-              onClick={openEditModal}
-              className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer"
-            >
-              <Edit2 size={16} /> Edit Draft
-            </button>
-          )}
-
-          {claim.status === 'DRAFT' && user?.role === 'APPLICANT' && (
-            <button
-              onClick={() => handleStatusTransition('SUBMITTED')}
-              disabled={submittingAction}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/25 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {submittingAction ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-              Submit Claim
-            </button>
-          )}
-
-          {claim.status === 'RETURNED_FOR_CHANGES' && user?.role === 'APPLICANT' && (
-            <button
-              onClick={() => handleStatusTransition('DRAFT')}
-              disabled={submittingAction}
-              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-purple-600/10 hover:shadow-purple-600/25 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {submittingAction ? <Loader2 size={16} className="animate-spin" /> : <CornerUpLeft size={16} />}
-              Move to Draft to Edit
-            </button>
-          )}
-        </div>
+        <div />
       </div>
 
       {/* Main Details Panel */}

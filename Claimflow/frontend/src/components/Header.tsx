@@ -16,6 +16,7 @@ export type AppView = 'dashboard' | 'claims' | 'create' | 'audit' | 'profile';
 interface AppShellProps {
   activeView: AppView;
   onNavigate: (view: AppView) => void;
+  hidePageCopy?: boolean;
   children: React.ReactNode;
 }
 
@@ -32,7 +33,7 @@ const navByRole = {
   ],
 };
 
-const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) => {
+const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy = false, children }) => {
   const { user, logout } = useAuth();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
@@ -107,7 +108,9 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
         <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-3 shadow-sm sm:px-7 lg:px-8">
           <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6">
             <div>
-              <h1 className="text-[28px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
+              {!hidePageCopy && (
+                <h1 className="text-[28px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
+              )}
             </div>
 
             <div className="relative hidden lg:block">
@@ -151,9 +154,11 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
         </nav>
 
         <div className="mx-auto max-w-[1480px] px-4 py-8 sm:px-5 lg:px-6">
-          <div className="mb-8">
-            <p className="text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
-          </div>
+          {!hidePageCopy && (
+            <div className="mb-8">
+              <p className="text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
+            </div>
+          )}
           {children}
         </div>
       </main>
