@@ -551,6 +551,314 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     );
   }
 
+  if (user?.role === 'REVIEWER') {
+    const progressSteps = [
+      { status: 'DRAFT', label: 'Draft', icon: CheckCircle2, date: claim.createdAt },
+      { status: 'SUBMITTED', label: 'Submitted', icon: CheckCircle2, date: claim.createdAt },
+      { status: 'UNDER_REVIEW', label: 'Under Review', icon: Clock, date: claim.updatedAt },
+      { status: 'APPROVED', label: 'Approved / Rejected', icon: CheckCircle2 },
+      { status: 'COMPLETED', label: 'Completed', icon: Flag },
+    ];
+
+    const reviewActionAvailable = claim.status === 'SUBMITTED' || claim.status === 'UNDER_REVIEW';
+
+    return (
+      <div className="w-full space-y-5">
+        <div>
+          <button onClick={onBack} className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+            <ArrowLeft size={17} /> Back to Review Claims
+          </button>
+          <h1 className="mt-5 text-[30px] font-extrabold leading-tight text-[#07152f]">Claim Details</h1>
+          <p className="mt-2 text-[17px] text-[#33476b]">Review the claim details and take appropriate action.</p>
+        </div>
+
+        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-5">
+              <span className="flex h-20 w-20 items-center justify-center rounded-[8px] bg-violet-100 text-violet-700">
+                <Plane size={42} />
+              </span>
+              <div>
+                <h2 className="text-[26px] font-extrabold text-[#07152f]">{claim.title}</h2>
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-[#10244a]">
+                  <span className="rounded-[6px] bg-blue-50 px-3 py-1 font-bold text-blue-600">{claim.category}</span>
+                  <span>Claim ID: {claim.id.slice(0, 13)}</span>
+                  <Copy size={16} className="text-[#33476b]" />
+                  {claim.applicant && (
+                    <span>
+                      Applicant: <span className="font-extrabold text-blue-600">{claim.applicant.name}</span> ({claim.applicant.email})
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="text-left lg:text-right">
+              {getStatusBadge(claim.status)}
+              <div className="mt-4 text-sm font-bold text-[#33476b]">Submitted on</div>
+              <div className="mt-1 text-base font-semibold text-[#07152f]">{formatShortDateTime(claim.createdAt)}</div>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid gap-5 xl:grid-cols-[1.6fr_1fr]">
+          <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="grid gap-8 lg:grid-cols-2">
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <FileText size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Description</h3>
+                    <p className="mt-2 text-sm text-[#10244a]">{claim.description || 'No description provided.'}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <Tag size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Category</h3>
+                    <p className="mt-2 text-sm text-[#10244a]">{claim.category}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <DollarSign size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Amount</h3>
+                    <p className="mt-2 text-base font-semibold text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <Calendar size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Date of Expense</h3>
+                    <p className="mt-2 text-sm text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-8 border-slate-200 lg:border-l lg:pl-8">
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <Paperclip size={18} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Attachment</h3>
+                    {claim.attachment ? (
+                      <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-extrabold text-[#07152f]">{claim.attachment.fileName}</div>
+                          <div className="text-xs text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
+                        </div>
+                        <a
+                          href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-3 rounded-[8px] border border-slate-200 p-2 text-blue-600"
+                        >
+                          <Download size={18} />
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-sm text-[#33476b]">No attachment uploaded.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                    <FileText size={18} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#07152f]">Notes from Applicant</h3>
+                    <p className="mt-2 text-sm text-[#33476b]">-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-base font-extrabold text-[#07152f]">Claim Information</h3>
+            <dl className="mt-6 space-y-5 text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Status</dt>
+                <dd>{getStatusBadge(claim.status)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Submitted On</dt>
+                <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Last Updated</dt>
+                <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.updatedAt)}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <dt className="font-bold text-[#07152f]">Created On</dt>
+                <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+
+        <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-base font-extrabold text-[#07152f]">Claim Status Progress</h3>
+          <div className="mt-8 grid grid-cols-5 items-start">
+            {progressSteps.map((step, index) => {
+              const Icon = step.icon;
+              const complete = index < currentProgressIndex;
+              const active = index === currentProgressIndex;
+              return (
+                <div key={step.status} className="relative text-center">
+                  {index > 0 && <div className={`absolute right-1/2 top-5 h-0.5 w-full ${index <= currentProgressIndex ? 'bg-emerald-400' : 'bg-slate-200'}`} />}
+                  <span
+                    className={`relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-full border-4 ${
+                      complete
+                        ? 'border-emerald-100 bg-emerald-500 text-white'
+                        : active
+                          ? 'border-violet-100 bg-violet-600 text-white'
+                          : 'border-slate-100 bg-slate-100 text-slate-400'
+                    }`}
+                  >
+                    <Icon size={22} />
+                  </span>
+                  <div className="mt-3 text-sm font-extrabold text-[#07152f]">{step.label}</div>
+                  <div className="mt-1 text-xs text-[#33476b]">{step.date ? formatShortDateTime(step.date) : ''}</div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="grid gap-5 xl:grid-cols-[1.9fr_1fr]">
+          <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="px-2 text-lg font-extrabold text-[#07152f]">Audit History</h3>
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[760px] text-left text-sm">
+                <thead className="border-y border-slate-200 text-[#33476b]">
+                  <tr>
+                    <th className="px-4 py-3">Date & Time</th>
+                    <th className="px-4 py-3">Action</th>
+                    <th className="px-4 py-3">Status Change</th>
+                    <th className="px-4 py-3">By</th>
+                    <th className="px-4 py-3">Comment</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {auditRows.map((log) => (
+                    <tr key={log.id}>
+                      <td className="px-4 py-4">
+                        <span className={`mr-4 inline-block h-3 w-3 rounded-full ${log.newStatus === 'UNDER_REVIEW' ? 'bg-violet-500' : log.newStatus === 'SUBMITTED' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                        {formatShortDateTime(log.createdAt)}
+                      </td>
+                      <td className="px-4 py-4 font-medium text-[#10244a]">
+                        {log.newStatus === 'UNDER_REVIEW' ? 'Moved to review' : log.oldStatus ? 'Claim submitted' : 'Claim created'}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          {getStatusBadge(log.oldStatus || 'NEW')}
+                          <span>→</span>
+                          {getStatusBadge(log.newStatus)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-[#10244a]">
+                        <span className="font-extrabold">{log.user?.name || 'System'}</span>
+                        <span className="block text-[#33476b]">({log.user?.role || 'Reviewer'})</span>
+                      </td>
+                      <td className="px-4 py-4 text-[#10244a]">{log.comment || 'Initial claim created'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button className="mt-4 rounded-[8px] border border-blue-200 px-5 py-3 text-sm font-extrabold text-blue-600">
+              View Full Audit History
+            </button>
+          </section>
+
+          <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-extrabold text-[#07152f]">Review Actions</h3>
+            <p className="mt-2 text-sm text-[#33476b]">Please review the claim details and choose an action.</p>
+
+            <div className="mt-4 space-y-3">
+              {claim.status === 'SUBMITTED' && (
+                <button
+                  onClick={() => handleStatusTransition('UNDER_REVIEW')}
+                  disabled={submittingAction}
+                  className="w-full rounded-[8px] bg-blue-600 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+                >
+                  Start Review
+                  <span className="block text-xs font-semibold">Move this claim into review</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => handleStatusTransition('APPROVED')}
+                disabled={submittingAction || !reviewActionAvailable}
+                className="w-full rounded-[8px] bg-emerald-600 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+              >
+                Approve
+                <span className="block text-xs font-semibold">Approve this claim</span>
+              </button>
+
+              <button
+                onClick={() => setActiveAction(activeAction === 'REJECT' ? null : 'REJECT')}
+                disabled={!reviewActionAvailable}
+                className="w-full rounded-[8px] bg-red-600 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+              >
+                Reject
+                <span className="block text-xs font-semibold">Reject this claim</span>
+              </button>
+
+              <button
+                onClick={() => setActiveAction(activeAction === 'RETURN' ? null : 'RETURN')}
+                disabled={!reviewActionAvailable}
+                className="w-full rounded-[8px] bg-orange-500 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+              >
+                Return for Changes
+                <span className="block text-xs font-semibold">Send back to applicant for changes</span>
+              </button>
+
+              {activeAction && (
+                <div className="rounded-[8px] border border-slate-200 p-3">
+                  <textarea
+                    value={comment}
+                    onChange={(event) => setComment(event.target.value)}
+                    rows={3}
+                    placeholder={activeAction === 'REJECT' ? 'Reason for rejection...' : 'Requested changes...'}
+                    className="w-full rounded-[8px] border border-slate-200 p-3 text-sm outline-none focus:border-blue-500"
+                  />
+                  <button
+                    onClick={() => handleStatusTransition(activeAction === 'REJECT' ? 'REJECTED' : 'RETURNED_FOR_CHANGES', comment)}
+                    disabled={submittingAction || !comment.trim()}
+                    className="mt-3 w-full rounded-[8px] bg-[#07152f] px-4 py-3 text-sm font-extrabold text-white disabled:opacity-50"
+                  >
+                    Confirm {activeAction === 'REJECT' ? 'Reject' : 'Return'}
+                  </button>
+                </div>
+              )}
+
+              <button className="w-full rounded-[8px] border border-blue-400 px-4 py-3 text-left font-extrabold text-blue-600">
+                Add Internal Note (Optional)
+              </button>
+            </div>
+
+            <div className="mt-4 flex items-start gap-3 rounded-[8px] border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-[#10244a]">
+              <Info size={18} className="mt-0.5 shrink-0 text-blue-600" />
+              Review actions will be recorded in the audit trail.
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Top Bar */}
