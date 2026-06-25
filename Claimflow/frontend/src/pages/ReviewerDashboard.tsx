@@ -135,16 +135,16 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
           const Icon = card.icon;
           return (
             <section key={card.label} className={`flex min-h-[150px] rounded-[8px] border bg-white p-5 shadow-sm ${card.classes}`}>
-              <div className="grid w-full grid-cols-[56px_1fr] items-center gap-4">
-                <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
-                  <Icon size={24} />
-                </span>
-                <div className="flex min-h-[108px] flex-col justify-between">
-                  <h3 className="text-[15px] font-extrabold leading-snug">{card.label}</h3>
-                  <div>
-                    <div className="text-[26px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
-                    <p className="mt-3 text-[13px] font-medium leading-snug text-[#33476b]">{card.caption}</p>
-                  </div>
+              <div className="flex w-full flex-col justify-between gap-5">
+                <div className="flex items-start gap-3">
+                  <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
+                    <Icon size={18} strokeWidth={2.4} />
+                  </span>
+                  <h3 className="min-w-0 break-words text-[14px] font-extrabold leading-snug">{card.label}</h3>
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <div className="text-[26px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
+                  <p className="text-[13px] font-medium leading-snug text-[#33476b]">{card.caption}</p>
                 </div>
               </div>
             </section>

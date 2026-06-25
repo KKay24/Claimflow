@@ -198,14 +198,16 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className={`flex min-h-[170px] flex-col justify-between rounded-[8px] border bg-white p-6 shadow-sm ${card.className}`}>
-              <div className="flex items-start justify-between gap-4">
-                <span className="text-base font-extrabold">{card.label}</span>
-                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] ${card.className}`}>
-                  <Icon size={23} />
+            <div key={card.label} className={`flex min-h-[140px] flex-col justify-between rounded-[8px] border bg-white p-5 shadow-sm ${card.className}`}>
+              <div className="flex items-start gap-2">
+                <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] ${card.className}`}>
+                  <Icon size={13} strokeWidth={2.4} />
                 </span>
+                <div className="min-w-0">
+                  <span className="break-words text-[13px] font-extrabold leading-snug">{card.label}</span>
+                </div>
               </div>
-              <h3 className="text-4xl font-extrabold leading-none text-[#07152f]">{card.count}</h3>
+              <h3 className="text-[28px] font-extrabold leading-none text-[#07152f]">{card.count}</h3>
             </div>
           );
         })}
