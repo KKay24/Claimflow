@@ -150,7 +150,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, children }) =
           </div>
         </nav>
 
-        <div className="mx-auto max-w-[1480px] px-5 py-8 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-[1480px] px-4 py-8 sm:px-5 lg:px-6">
           <div className="mb-8">
             <p className="text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
           </div>
