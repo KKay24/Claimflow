@@ -140,10 +140,10 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                   <Icon size={24} />
                 </span>
                 <div className="flex min-h-[108px] flex-col justify-between">
-                  <h3 className="text-[17px] font-extrabold leading-snug">{card.label}</h3>
+                  <h3 className="text-[15px] font-extrabold leading-snug">{card.label}</h3>
                   <div>
-                    <div className="text-[30px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
-                    <p className="mt-3 text-sm font-medium leading-snug text-[#33476b]">{card.caption}</p>
+                    <div className="text-[26px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
+                    <p className="mt-3 text-[13px] font-medium leading-snug text-[#33476b]">{card.caption}</p>
                   </div>
                 </div>
               </div>
@@ -160,25 +160,25 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by title, applicant or ID..."
-              className="h-12 w-full rounded-[8px] border border-slate-200 bg-white pl-12 pr-4 text-sm outline-none focus:border-blue-500"
+              className="h-12 w-full rounded-[8px] border border-slate-200 bg-white pl-12 pr-4 text-[13px] outline-none focus:border-blue-500"
             />
           </div>
-          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-[13px] font-extrabold">
             All Statuses <ChevronDown size={18} />
           </button>
-          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-[13px] font-extrabold">
             All Categories <ChevronDown size={18} />
           </button>
-          <button className="flex h-14 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-left text-sm font-extrabold">
+          <button className="flex h-14 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-left text-[13px] font-extrabold">
             <CalendarDays size={20} />
             <span className="min-w-0 leading-tight">
-              <span className="block text-xs text-[#33476b]">Date Range</span>
+              <span className="block text-[11px] text-[#33476b]">Date Range</span>
               <span className="block whitespace-nowrap">01 May 2024 - 12 May 2024</span>
             </span>
             <ChevronDown size={18} className="ml-auto" />
           </button>
-          <button className="h-14 rounded-[8px] border border-slate-200 px-5 text-sm font-extrabold text-[#33476b]">Clear Filters</button>
-          <button className="flex h-14 items-center justify-center gap-3 rounded-[8px] bg-blue-600 px-5 text-sm font-extrabold text-white">
+          <button className="h-14 rounded-[8px] border border-slate-200 px-5 text-[13px] font-extrabold text-[#33476b]">Clear Filters</button>
+          <button className="flex h-14 items-center justify-center gap-3 rounded-[8px] bg-blue-600 px-5 text-[13px] font-extrabold text-white">
             <Download size={19} />
             Export
           </button>
