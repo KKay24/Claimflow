@@ -107,7 +107,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div className="w-full space-y-8">
       <div className="flex justify-end lg:-mt-[68px] lg:mb-4">
         <div className="relative w-full lg:w-[360px]">
           <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
