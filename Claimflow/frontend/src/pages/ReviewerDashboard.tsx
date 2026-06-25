@@ -130,19 +130,21 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
 
   return (
     <div className="w-full space-y-6">
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-6">
+      <div className="grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-6">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <section key={card.label} className={`rounded-[8px] border bg-white p-5 shadow-sm ${card.classes}`}>
-              <div className="flex items-start gap-4">
-                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
+            <section key={card.label} className={`flex min-h-[150px] rounded-[8px] border bg-white p-5 shadow-sm ${card.classes}`}>
+              <div className="grid w-full grid-cols-[56px_1fr] items-center gap-4">
+                <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
                   <Icon size={24} />
                 </span>
-                <div>
-                  <h3 className="text-base font-extrabold">{card.label}</h3>
-                  <div className="mt-2 text-[28px] font-extrabold text-[#07152f]">{card.value}</div>
-                  <p className="mt-1 text-sm font-medium text-[#33476b]">{card.caption}</p>
+                <div className="flex min-h-[108px] flex-col justify-between">
+                  <h3 className="text-[17px] font-extrabold leading-snug">{card.label}</h3>
+                  <div>
+                    <div className="text-[30px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
+                    <p className="mt-3 text-sm font-medium leading-snug text-[#33476b]">{card.caption}</p>
+                  </div>
                 </div>
               </div>
             </section>
@@ -151,7 +153,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
       </div>
 
       <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-4 xl:grid-cols-[1.5fr_0.85fr_0.85fr_1.1fr_auto_auto]">
+        <div className="grid items-center gap-4 xl:grid-cols-[minmax(260px,1.6fr)_190px_190px_260px_150px_150px]">
           <div className="relative">
             <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" />
             <input
@@ -161,22 +163,22 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
               className="h-12 w-full rounded-[8px] border border-slate-200 bg-white pl-12 pr-4 text-sm outline-none focus:border-blue-500"
             />
           </div>
-          <button className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
             All Statuses <ChevronDown size={18} />
           </button>
-          <button className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+          <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
             All Categories <ChevronDown size={18} />
           </button>
-          <button className="flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-sm font-extrabold">
+          <button className="flex h-14 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-left text-sm font-extrabold">
             <CalendarDays size={20} />
-            <span>
+            <span className="min-w-0 leading-tight">
               <span className="block text-xs text-[#33476b]">Date Range</span>
-              01 May 2024 - 12 May 2024
+              <span className="block whitespace-nowrap">01 May 2024 - 12 May 2024</span>
             </span>
             <ChevronDown size={18} className="ml-auto" />
           </button>
-          <button className="h-12 rounded-[8px] border border-slate-200 px-5 text-sm font-extrabold text-[#33476b]">Clear Filters</button>
-          <button className="flex h-12 items-center gap-3 rounded-[8px] bg-blue-600 px-5 text-sm font-extrabold text-white">
+          <button className="h-14 rounded-[8px] border border-slate-200 px-5 text-sm font-extrabold text-[#33476b]">Clear Filters</button>
+          <button className="flex h-14 items-center justify-center gap-3 rounded-[8px] bg-blue-600 px-5 text-sm font-extrabold text-white">
             <Download size={19} />
             Export
           </button>
