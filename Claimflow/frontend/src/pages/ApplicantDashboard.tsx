@@ -9,6 +9,11 @@ import {
   Search,
   CalendarDays,
   ChevronDown,
+  Send,
+  Clock,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
 } from 'lucide-react';
 
 interface Attachment {
@@ -118,6 +123,44 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
 
   // Stats calculation
   const draftCount = claims.filter((c) => c.status === 'DRAFT').length;
+  const statCards = [
+    {
+      label: 'Draft',
+      count: draftCount,
+      icon: FileText,
+      className: 'border-blue-200 text-blue-700 bg-blue-50',
+    },
+    {
+      label: 'Submitted',
+      count: claims.filter((c) => c.status === 'SUBMITTED').length,
+      icon: Send,
+      className: 'border-amber-200 text-amber-700 bg-amber-50',
+    },
+    {
+      label: 'Under Review',
+      count: claims.filter((c) => c.status === 'UNDER_REVIEW').length,
+      icon: Clock,
+      className: 'border-violet-200 text-violet-700 bg-violet-50',
+    },
+    {
+      label: 'Approved',
+      count: claims.filter((c) => c.status === 'APPROVED').length,
+      icon: CheckCircle,
+      className: 'border-emerald-200 text-emerald-700 bg-emerald-50',
+    },
+    {
+      label: 'Rejected',
+      count: claims.filter((c) => c.status === 'REJECTED').length,
+      icon: XCircle,
+      className: 'border-red-200 text-red-700 bg-red-50',
+    },
+    {
+      label: 'Returned',
+      count: claims.filter((c) => c.status === 'RETURNED_FOR_CHANGES').length,
+      icon: RotateCcw,
+      className: 'border-orange-200 text-orange-700 bg-orange-50',
+    },
+  ];
 
   const getStatusBadge = (status: string) => {
     const base = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ";
@@ -152,25 +195,20 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5">
-        <div className="bg-white border border-blue-200 p-6 rounded-[8px] shadow-sm">
-          <div className="space-y-1">
-            <span className="text-base text-blue-700 font-bold">Draft</span>
-            <h3 className="text-4xl font-extrabold text-[#07152f] mt-6">{draftCount}</h3>
-          </div>
-        </div>
-
-        {[
-          ['Submitted', 'SUBMITTED', 'border-amber-200 text-amber-700'],
-          ['Under Review', 'UNDER_REVIEW', 'border-violet-200 text-violet-700'],
-          ['Approved', 'APPROVED', 'border-emerald-200 text-emerald-700'],
-          ['Rejected', 'REJECTED', 'border-red-200 text-red-700'],
-          ['Returned', 'RETURNED_FOR_CHANGES', 'border-orange-200 text-orange-700'],
-        ].map(([label, status, classes]) => (
-          <div key={status} className={`bg-white border ${classes} p-6 rounded-[8px] shadow-sm`}>
-            <span className="text-base font-bold">{label}</span>
-            <h3 className="text-4xl font-extrabold text-[#07152f] mt-6">{claims.filter((c) => c.status === status).length}</h3>
-          </div>
-        ))}
+        {statCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <div key={card.label} className={`flex min-h-[170px] flex-col justify-between rounded-[8px] border bg-white p-6 shadow-sm ${card.className}`}>
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-base font-extrabold">{card.label}</span>
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] ${card.className}`}>
+                  <Icon size={23} />
+                </span>
+              </div>
+              <h3 className="text-4xl font-extrabold leading-none text-[#07152f]">{card.count}</h3>
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid gap-5 border-t border-slate-200 pt-7 lg:grid-cols-[1.5fr_1.2fr_1.2fr_1.3fr]">
