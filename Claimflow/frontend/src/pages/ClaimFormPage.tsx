@@ -21,12 +21,12 @@ interface ClaimFormPageProps {
 }
 
 const categoryOptions = [
-  { value: 'TRAVEL', label: 'Travel', icon: Plane, color: 'text-blue-600 bg-blue-50 border-blue-100' },
-  { value: 'FUEL', label: 'Fuel', icon: Fuel, color: 'text-red-600 bg-red-50 border-red-100' },
-  { value: 'INTERNET', label: 'Internet', icon: Wifi, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
-  { value: 'MEALS', label: 'Meals', icon: Utensils, color: 'text-orange-600 bg-orange-50 border-orange-100' },
-  { value: 'EQUIPMENT', label: 'Equipment', icon: Monitor, color: 'text-violet-600 bg-violet-50 border-violet-100' },
-  { value: 'OTHER', label: 'Other', icon: MoreHorizontal, color: 'text-slate-600 bg-slate-50 border-slate-100' },
+  { value: 'TRAVEL', label: 'Travel', icon: Plane },
+  { value: 'FUEL', label: 'Fuel', icon: Fuel },
+  { value: 'INTERNET', label: 'Internet', icon: Wifi },
+  { value: 'MEALS', label: 'Meals', icon: Utensils },
+  { value: 'EQUIPMENT', label: 'Equipment', icon: Monitor },
+  { value: 'OTHER', label: 'Other', icon: MoreHorizontal },
 ];
 
 const currencyOptions = ['USD', 'AUD', 'GBP', 'EUR', 'CAD', 'ZMW', 'ZAR', 'JPY'];
@@ -118,23 +118,6 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
                 ))}
               </select>
               <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-[#33476b]" size={22} />
-            </div>
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              {categoryOptions.map((option) => {
-                const Icon = option.icon;
-                const active = category === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setCategory(option.value)}
-                    className={`button-text flex items-center justify-center gap-2 rounded-[8px] border px-3 py-2 ${option.color} ${active ? 'ring-2 ring-blue-500' : ''}`}
-                  >
-                    <Icon size={16} />
-                    {option.label}
-                  </button>
-                );
-              })}
             </div>
           </label>
 
