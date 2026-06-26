@@ -29,6 +29,8 @@ interface Application {
   category: string;
   description: string | null;
   amount: number;
+  currency?: string;
+  expenseDate?: string | null;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -252,7 +254,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                       <div className="small-text text-[#33476b]">{claim.applicant?.email}</div>
                     </td>
                     <td className="px-5 py-4">{categoryBadge(claim.category)}</td>
-                    <td className="px-5 py-4">USD {parseFloat(claim.amount as any).toFixed(2)}</td>
+                    <td className="px-5 py-4">{claim.currency || 'USD'} {parseFloat(claim.amount as any).toFixed(2)}</td>
                     <td className="px-5 py-4">{getStatusBadge(claim.status)}</td>
                     <td className="px-5 py-4">
                       {new Date(claim.createdAt).toLocaleDateString()}<br />

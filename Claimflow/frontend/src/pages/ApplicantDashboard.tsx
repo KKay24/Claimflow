@@ -30,6 +30,8 @@ interface Application {
   category: string;
   description: string | null;
   amount: number;
+  currency?: string;
+  expenseDate?: string | null;
   attachmentUrl: string | null;
   status: string;
   createdAt: string;
@@ -254,7 +256,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                     {claim.description && <p className="helper-text mt-1 truncate text-[#33476b]">{claim.description}</p>}
                   </td>
                   <td className="py-4 px-3">{claim.category}</td>
-                  <td className="py-4 px-3">${parseFloat(claim.amount as any).toFixed(2)}</td>
+                  <td className="py-4 px-3">{claim.currency || 'USD'} {parseFloat(claim.amount as any).toFixed(2)}</td>
                   <td className="py-4 px-3">{getStatusBadge(claim.status)}</td>
                   <td className="py-4 px-3">
                     {new Date(claim.updatedAt).toLocaleDateString()}<br />
@@ -335,7 +337,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                     </td>
                     <td className="py-4 px-4 text-xs font-bold text-slate-400">{claim.category}</td>
                     <td className="py-4 px-4 font-bold text-slate-900 dark:text-slate-200">
-                      ${parseFloat(claim.amount as any).toFixed(2)}
+                      {claim.currency || 'USD'} {parseFloat(claim.amount as any).toFixed(2)}
                     </td>
                     <td className="py-4 px-4 text-xs text-slate-400">
                       {new Date(claim.createdAt).toLocaleDateString()}

@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ExpenseCategory } from '../../database/entities/application.entity';
 
@@ -20,4 +20,13 @@ export class CreateApplicationDto {
   @Min(0.01, { message: 'Amount must be greater than zero' })
   @IsNotEmpty({ message: 'Amount is required' })
   amount: number;
+
+  @IsString()
+  @Length(3, 3, { message: 'Currency must be a 3-letter code' })
+  @IsOptional()
+  currency?: string;
+
+  @IsDateString({}, { message: 'Expense date must be a valid date' })
+  @IsOptional()
+  expenseDate?: string;
 }

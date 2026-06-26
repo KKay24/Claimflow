@@ -26,6 +26,8 @@ export class ApplicationsService {
   ): Promise<Application> {
     const application = this.applicationRepository.create({
       ...createDto,
+      currency: createDto.currency?.toUpperCase() || 'USD',
+      expenseDate: createDto.expenseDate || null,
       status: ApplicationStatus.DRAFT,
       applicantId: userId,
     });
@@ -78,7 +80,11 @@ export class ApplicationsService {
     }
 
     // Update fields
-    Object.assign(application, updateDto);
+    Object.assign(application, {
+      ...updateDto,
+      currency: updateDto.currency?.toUpperCase() || application.currency,
+      expenseDate: updateDto.expenseDate ?? application.expenseDate,
+    });
 
     if (file) {
       const attachment = await this.fileUploadService.saveAttachment(file, application.id);
@@ -128,6 +134,8 @@ export class ApplicationsService {
         'app.category',
         'app.description',
         'app.amount',
+        'app.currency',
+        'app.expenseDate',
         'app.status',
         'app.createdAt',
         'app.updatedAt',

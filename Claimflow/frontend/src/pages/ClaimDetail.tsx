@@ -51,6 +51,8 @@ interface Application {
   category: string;
   description: string | null;
   amount: number;
+  currency?: string;
+  expenseDate?: string | null;
   attachmentUrl: string | null;
   status: string;
   createdAt: string;
@@ -64,6 +66,8 @@ interface ClaimDetailProps {
   claimId: string;
   onBack: () => void;
 }
+
+const currencyOptions = ['USD', 'AUD', 'GBP', 'EUR', 'CAD', 'ZMW', 'ZAR', 'JPY'];
 
 const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
   const { user } = useAuth();
@@ -82,6 +86,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
   const [editCategory, setEditCategory] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editAmount, setEditAmount] = useState('');
+  const [editCurrency, setEditCurrency] = useState('USD');
+  const [editExpenseDate, setEditExpenseDate] = useState('');
   const [editFile, setEditFile] = useState<File | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
   const [updatingClaim, setUpdatingClaim] = useState(false);
@@ -144,6 +150,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     setEditCategory(claim.category);
     setEditDescription(claim.description || '');
     setEditAmount(claim.amount.toString());
+    setEditCurrency(claim.currency || 'USD');
+    setEditExpenseDate(claim.expenseDate || new Date().toISOString().slice(0, 10));
     setEditFile(null);
     setEditError(null);
     setIsEditModalOpen(true);
@@ -151,7 +159,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
 
   const handleUpdateClaim = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editTitle || !editCategory || !editAmount) {
+    if (!editTitle || !editCategory || !editAmount || !editCurrency || !editExpenseDate) {
       setEditError('Please fill in all required fields.');
       return;
     }
@@ -169,6 +177,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
       formData.append('category', editCategory);
       formData.append('description', editDescription);
       formData.append('amount', editAmount);
+      formData.append('currency', editCurrency);
+      formData.append('expenseDate', editExpenseDate);
       if (editFile) {
         formData.append('file', editFile);
       }
@@ -229,6 +239,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
       month: 'short',
       year: 'numeric',
     });
+
+  const expenseDate = claim?.expenseDate || claim?.createdAt || new Date().toISOString();
 
   const statusOrder = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'COMPLETED'];
   const progressStatus = claim?.status === 'REJECTED' ? 'APPROVED' : claim?.status === 'RETURNED_FOR_CHANGES' ? 'UNDER_REVIEW' : claim?.status;
@@ -335,7 +347,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   </span>
                   <div>
                     <h3 className="card-title text-[#07152f]">Amount</h3>
-                    <p className="body-text mt-2 text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
+                    <p className="body-text mt-2 text-[#07152f]">{claim.currency || 'USD'} {parseFloat(claim.amount as any).toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -344,7 +356,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   </span>
                   <div>
                     <h3 className="card-title text-[#07152f]">Date of Expense</h3>
-                    <p className="body-text mt-2 text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
+                    <p className="body-text mt-2 text-[#10244a]">{formatDateOnly(expenseDate)}</p>
                   </div>
                 </div>
               </div>
@@ -532,7 +544,15 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <option value="EQUIPMENT">Equipment</option>
                     <option value="OTHER">Other</option>
                   </select>
+                  <select value={editCurrency} onChange={(e) => setEditCurrency(e.target.value)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" required>
+                    {currencyOptions.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <input type="number" step="0.01" min="0.01" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" required />
+                  <input type="date" value={editExpenseDate} onChange={(e) => setEditExpenseDate(e.target.value)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" required />
                 </div>
                 <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={3} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2.5 text-sm text-white outline-none focus:border-indigo-500" />
                 <input type="file" onChange={(e) => setEditFile(e.target.files ? e.target.files[0] : null)} className="w-full rounded-lg border border-slate-800 bg-slate-950 p-2 text-xs text-slate-300 outline-none" />
@@ -629,7 +649,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   </span>
                   <div>
                     <h3 className="card-title text-[#07152f]">Amount</h3>
-                    <p className="body-text mt-2 text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
+                    <p className="body-text mt-2 text-[#07152f]">{claim.currency || 'USD'} {parseFloat(claim.amount as any).toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -638,7 +658,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   </span>
                   <div>
                     <h3 className="card-title text-[#07152f]">Date of Expense</h3>
-                    <p className="body-text mt-2 text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
+                    <p className="body-text mt-2 text-[#10244a]">{formatDateOnly(expenseDate)}</p>
                   </div>
                 </div>
               </div>
@@ -896,7 +916,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 <div className="flex flex-col">
                   <span className="text-xs text-slate-400">Amount Claimed</span>
                   <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                    ${parseFloat(claim.amount as any).toFixed(2)}
+                    {claim.currency || 'USD'} {parseFloat(claim.amount as any).toFixed(2)}
                   </span>
                 </div>
               </div>

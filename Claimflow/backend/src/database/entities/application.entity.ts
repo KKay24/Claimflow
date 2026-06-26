@@ -41,6 +41,12 @@ export class Application {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
+  @Column({ type: 'varchar', length: 3, default: 'USD' })
+  currency: string;
+
+  @Column({ type: 'date', name: 'expense_date', nullable: true })
+  expenseDate: string | null;
+
   @Column({ type: 'varchar', name: 'attachment_url', nullable: true })
   attachmentUrl: string;
 

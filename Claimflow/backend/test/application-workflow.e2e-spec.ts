@@ -57,11 +57,15 @@ describe('Application workflow endpoints (e2e)', () => {
       .field('category', 'TRAVEL')
       .field('description', 'Created by the workflow e2e test')
       .field('amount', '125.50')
+      .field('currency', 'AUD')
+      .field('expenseDate', '2026-06-26')
       .expect(201);
 
     expect(createResponse.body).toMatchObject({
       title: 'Workflow test claim',
       category: 'TRAVEL',
+      currency: 'AUD',
+      expenseDate: '2026-06-26',
       status: 'DRAFT',
     });
 
@@ -83,6 +87,10 @@ describe('Application workflow endpoints (e2e)', () => {
       .get(`/applications/${claimId}`)
       .set('Authorization', `Bearer ${applicantToken}`)
       .expect(200);
+    expect(detailResponse.body).toMatchObject({
+      currency: 'AUD',
+      expenseDate: '2026-06-26',
+    });
     expect(detailResponse.body.auditLogs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ newStatus: 'DRAFT' }),
@@ -99,6 +107,8 @@ describe('Application workflow endpoints (e2e)', () => {
       .field('category', 'MEALS')
       .field('description', 'Reviewer transition smoke test')
       .field('amount', '80')
+      .field('currency', 'ZMW')
+      .field('expenseDate', '2026-06-25')
       .expect(201);
 
     const claimId = createResponse.body.id;
@@ -113,6 +123,10 @@ describe('Application workflow endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${reviewerToken}`)
       .expect(200);
     expect(reviewerListResponse.body.some((claim: { id: string }) => claim.id === claimId)).toBe(true);
+    expect(reviewerListResponse.body.find((claim: { id: string }) => claim.id === claimId)).toMatchObject({
+      currency: 'ZMW',
+      expenseDate: '2026-06-25',
+    });
 
     const reviewerDetailResponse = await request(httpServer)
       .get(`/reviewer/applications/${claimId}`)

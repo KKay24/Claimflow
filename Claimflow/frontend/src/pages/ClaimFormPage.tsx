@@ -3,9 +3,14 @@ import {
   Calendar,
   ChevronDown,
   FileText,
+  Fuel,
   Loader2,
+  Monitor,
+  MoreHorizontal,
   Plane,
+  Utensils,
   UploadCloud,
+  Wifi,
   X,
 } from 'lucide-react';
 import api from '../utils/api';
@@ -15,17 +20,32 @@ interface ClaimFormPageProps {
   onSaved: () => void;
 }
 
+const categoryOptions = [
+  { value: 'TRAVEL', label: 'Travel', icon: Plane, color: 'text-blue-600 bg-blue-50 border-blue-100' },
+  { value: 'FUEL', label: 'Fuel', icon: Fuel, color: 'text-red-600 bg-red-50 border-red-100' },
+  { value: 'INTERNET', label: 'Internet', icon: Wifi, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
+  { value: 'MEALS', label: 'Meals', icon: Utensils, color: 'text-orange-600 bg-orange-50 border-orange-100' },
+  { value: 'EQUIPMENT', label: 'Equipment', icon: Monitor, color: 'text-violet-600 bg-violet-50 border-violet-100' },
+  { value: 'OTHER', label: 'Other', icon: MoreHorizontal, color: 'text-slate-600 bg-slate-50 border-slate-100' },
+];
+
+const currencyOptions = ['USD', 'AUD', 'GBP', 'EUR', 'CAD', 'ZMW', 'ZAR', 'JPY'];
+
+const today = () => new Date().toISOString().slice(0, 10);
+
 const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
   const [title, setTitle] = useState('Flight to Nairobi');
   const [category, setCategory] = useState('TRAVEL');
   const [description, setDescription] = useState('Flight to Nairobi for client meeting.');
   const [amount, setAmount] = useState('450.00');
+  const [currency, setCurrency] = useState('USD');
+  const [expenseDate, setExpenseDate] = useState(today());
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const saveClaim = async (submitAfterCreate: boolean) => {
-    if (!title.trim() || !category || !amount) {
+    if (!title.trim() || !category || !amount || !currency || !expenseDate) {
       setError('Please fill in all required fields.');
       return;
     }
@@ -39,6 +59,8 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
       formData.append('category', category);
       formData.append('description', description);
       formData.append('amount', amount);
+      formData.append('currency', currency);
+      formData.append('expenseDate', expenseDate);
       if (file) formData.append('file', file);
 
       const response = await api.post('/applications', formData, {
@@ -56,6 +78,9 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
       setSubmitting(false);
     }
   };
+
+  const selectedCategory = categoryOptions.find((option) => option.value === category) || categoryOptions[0];
+  const SelectedCategoryIcon = selectedCategory.icon;
 
   return (
     <div>
@@ -82,20 +107,34 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
           <label className="block">
             <span className="body-text">Category <span className="text-red-500">*</span></span>
             <div className="relative mt-3">
-              <Plane className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-600" size={27} />
+              <SelectedCategoryIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-blue-600" size={27} />
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
                 className="body-text h-[52px] w-full appearance-none rounded-[8px] border border-slate-300 bg-white px-16 outline-none focus:border-blue-500"
               >
-                <option value="TRAVEL">Travel</option>
-                <option value="FUEL">Fuel</option>
-                <option value="INTERNET">Internet</option>
-                <option value="MEALS">Meals</option>
-                <option value="EQUIPMENT">Equipment</option>
-                <option value="OTHER">Other</option>
+                {categoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
               </select>
               <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-[#33476b]" size={22} />
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {categoryOptions.map((option) => {
+                const Icon = option.icon;
+                const active = category === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setCategory(option.value)}
+                    className={`button-text flex items-center justify-center gap-2 rounded-[8px] border px-3 py-2 ${option.color} ${active ? 'ring-2 ring-blue-500' : ''}`}
+                  >
+                    <Icon size={16} />
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
           </label>
 
@@ -114,25 +153,39 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
           <label className="block">
             <span className="body-text">Amount <span className="text-red-500">*</span></span>
             <div className="body-text mt-3 flex h-[52px] rounded-[8px] border border-slate-300">
-              <span className="flex w-24 items-center justify-center border-r border-slate-300 bg-slate-50">USD</span>
+              <select
+                value={currency}
+                onChange={(event) => setCurrency(event.target.value)}
+                className="w-28 rounded-l-[8px] border-r border-slate-300 bg-slate-50 px-4 outline-none"
+              >
+                {currencyOptions.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
               <input
+                type="number"
+                min="0.01"
+                step="0.01"
                 value={amount}
                 onChange={(event) => setAmount(event.target.value)}
                 className="min-w-0 flex-1 px-5 outline-none"
               />
             </div>
-            <p className="helper-text mt-2 text-[#33476b]">Enter the total amount to be reimbursed.</p>
+            <p className="helper-text mt-2 text-[#33476b]">Choose a currency and enter the amount to be reimbursed.</p>
           </label>
 
           <label className="block">
             <span className="body-text">Date of Expense <span className="text-red-500">*</span></span>
-            <div className="body-text mt-3 flex h-[52px] items-center justify-between gap-4 rounded-[8px] border border-slate-300 px-5">
-              <span className="flex items-center gap-4">
-              <Calendar size={24} className="text-[#33476b]" />
-              10 May 2024
-              </span>
-              <Calendar size={24} className="text-[#33476b]" />
+            <div className="body-text relative mt-3 flex h-[52px] items-center rounded-[8px] border border-slate-300 px-5">
+              <Calendar size={22} className="pointer-events-none absolute left-5 text-[#33476b]" />
+              <input
+                type="date"
+                value={expenseDate}
+                onChange={(event) => setExpenseDate(event.target.value)}
+                className="h-full w-full bg-transparent pl-10 pr-3 outline-none"
+              />
             </div>
+            <p className="helper-text mt-2 text-[#33476b]">Select the date the expense happened.</p>
           </label>
         </div>
 
