@@ -136,11 +136,11 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
           return (
             <section key={card.label} className={`flex min-h-[150px] rounded-[8px] border bg-white p-5 shadow-sm ${card.classes}`}>
               <div className="flex w-full flex-col justify-between gap-5">
-                <div className="flex items-start gap-3">
-                  <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
-                    <Icon size={18} strokeWidth={2.4} />
+                <div className="flex items-center gap-2">
+                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
+                    <Icon size={12} strokeWidth={2.4} />
                   </span>
-                  <h3 className="min-w-0 break-words text-[14px] font-extrabold leading-snug">{card.label}</h3>
+                  <h3 className="min-w-0 whitespace-nowrap text-[12px] font-extrabold leading-snug">{card.label}</h3>
                 </div>
                 <div className="flex items-baseline gap-3">
                   <div className="text-[26px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
