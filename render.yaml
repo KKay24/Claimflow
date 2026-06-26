@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: claimflow-api
+    runtime: node
+    rootDir: Claimflow/backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_TYPE
+        value: postgres
+      - key: DB_SYNCHRONIZE
+        value: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: claimflow-db
+          property: connectionString
+
+databases:
+  - name: claimflow-db
+    databaseName: claimflow
+    user: claimflow

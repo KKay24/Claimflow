@@ -7,11 +7,16 @@ import * as path from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS for frontend development
+  const corsOrigin = process.env.CORS_ORIGIN;
+  const allowedOrigins = corsOrigin
+    ? corsOrigin.split(',').map((origin) => origin.trim())
+    : '*';
+
+  // Allow local development by default, and lock CORS to the deployed frontend when configured.
   app.enableCors({
-    origin: '*', // For local testing, allow any origin. In production, specify frontend URL.
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+    credentials: Boolean(corsOrigin),
   });
 
   // Enable request validation
