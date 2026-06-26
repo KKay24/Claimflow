@@ -291,8 +291,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <button onClick={onBack} className="button-text flex items-center gap-2 text-blue-600">
             <ArrowLeft size={17} /> Back to My Claims
           </button>
-          <h1 className="page-title mt-5 text-[#07152f]">Claim Details</h1>
-          <p className="body-text mt-2 text-[#33476b]">View the details and progress of your claim.</p>
+          <p className="body-text mt-5 text-[#33476b]">View the details and progress of your claim.</p>
         </div>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -588,8 +587,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <button onClick={onBack} className="button-text flex items-center gap-2 text-blue-600">
             <ArrowLeft size={17} /> Back to Review Claims
           </button>
-          <h1 className="page-title mt-5 text-[#07152f]">Claim Details</h1>
-          <p className="body-text mt-2 text-[#33476b]">Review the claim details and take appropriate action.</p>
+          <p className="body-text mt-5 text-[#33476b]">Review the claim details and take appropriate action.</p>
         </div>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">

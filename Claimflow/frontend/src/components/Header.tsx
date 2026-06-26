@@ -17,6 +17,7 @@ interface AppShellProps {
   activeView: AppView;
   onNavigate: (view: AppView) => void;
   hidePageCopy?: boolean;
+  topbarTitle?: string;
   children: React.ReactNode;
 }
 
@@ -33,7 +34,7 @@ const navByRole = {
   ],
 };
 
-const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy = false, children }) => {
+const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy = false, topbarTitle, children }) => {
   const { user, logout } = useAuth();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
@@ -69,6 +70,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
   };
 
   const currentPage = pageCopy[activeView];
+  const visibleTitle = topbarTitle || currentPage.title;
 
   return (
     <div className="min-h-screen bg-[#f7faff] text-[#07152f]">
@@ -108,8 +110,8 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
         <nav className="sticky top-0 z-30 border-b border-slate-200 bg-white px-5 py-3 shadow-sm sm:px-7 lg:px-8">
           <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6">
             <div>
-              {!hidePageCopy && (
-                <h1 className="page-title text-[#07152f]">{currentPage.title}</h1>
+              {(topbarTitle || !hidePageCopy) && (
+                <h1 className="page-title text-[#07152f]">{visibleTitle}</h1>
               )}
             </div>
 
