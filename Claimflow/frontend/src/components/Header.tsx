@@ -77,10 +77,10 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
           <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-blue-600 shadow-lg shadow-blue-950/40">
             <FileText size={23} />
           </span>
-          <span className="text-[23px] font-extrabold leading-none tracking-tight">ClaimFlow</span>
+          <span className="card-title leading-none text-white">ClaimFlow</span>
         </button>
 
-        <div className="mt-10 px-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-blue-100/70">
+        <div className="helper-text mt-10 px-2 uppercase text-blue-100/70">
           {user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}
         </div>
 
@@ -92,7 +92,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
               <button
                 key={item.view}
                 onClick={() => onNavigate(item.view)}
-                className={`flex h-[48px] w-full items-center gap-3 rounded-[8px] px-3 text-left text-[15px] font-bold transition ${
+                className={`sidebar-item flex h-[48px] w-full items-center gap-3 rounded-[8px] px-3 text-left transition ${
                   active ? 'bg-blue-600 text-white shadow-lg shadow-blue-950/30' : 'text-white/90 hover:bg-white/10'
                 }`}
               >
@@ -109,7 +109,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
           <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-6">
             <div>
               {!hidePageCopy && (
-                <h1 className="text-[28px] font-extrabold leading-tight tracking-tight text-[#07152f]">{currentPage.title}</h1>
+                <h1 className="page-title text-[#07152f]">{currentPage.title}</h1>
               )}
             </div>
 
@@ -119,7 +119,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
                 className="flex items-center gap-2 rounded-full px-2 py-1"
               >
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                  <span className="text-base font-extrabold">{user.name.charAt(0)}</span>
+                  <span className="body-text font-semibold">{user.name.charAt(0)}</span>
                 </span>
                 <ChevronDown size={18} className={`text-[#33476b] transition ${isAccountMenuOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -127,22 +127,22 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
               {isAccountMenuOpen && (
                 <div className="absolute right-0 top-[62px] w-64 overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl">
                   <div className="border-b border-slate-100 px-4 py-4">
-                    <div className="truncate text-[17px] font-extrabold text-[#07152f]">{user.name}</div>
-                    <div className="mt-1 text-sm font-semibold text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
+                    <div className="body-text truncate font-semibold text-[#07152f]">{user.name}</div>
+                    <div className="small-text mt-1 text-[#33476b]">{user.role === 'REVIEWER' ? 'Reviewer' : 'Applicant'}</div>
                   </div>
                   <button
                     onClick={() => {
                       setIsAccountMenuOpen(false);
                       onNavigate('profile');
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-4 text-left font-bold text-[#07152f] hover:bg-blue-50"
+                    className="button-text flex w-full items-center gap-3 px-4 py-4 text-left text-[#07152f] hover:bg-blue-50"
                   >
                     <User size={20} className="text-blue-600" />
                     My Profile
                   </button>
                   <button
                     onClick={logout}
-                    className="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-4 text-left font-bold text-red-600 hover:bg-red-50"
+                    className="button-text flex w-full items-center gap-3 border-t border-slate-100 px-4 py-4 text-left text-red-600 hover:bg-red-50"
                   >
                     <LogOut size={20} />
                     Logout
@@ -156,7 +156,7 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
         <div className="mx-auto max-w-[1480px] px-4 py-8 sm:px-5 lg:px-6">
           {!hidePageCopy && (
             <div className="mb-8">
-              <p className="text-[17px] text-[#33476b]">{currentPage.subtitle}</p>
+              <p className="body-text text-[#33476b]">{currentPage.subtitle}</p>
             </div>
           )}
           {children}

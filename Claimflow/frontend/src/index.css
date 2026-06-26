@@ -1,1 +1,77 @@
 @import "tailwindcss";
+
+body {
+  font-size: 10.8px;
+  font-weight: 400;
+}
+
+/* Shared typography scale, adjusted to 67.5% of the requested baseline. */
+.page-title {
+  font-size: 21.6px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.section-title {
+  font-size: 16.2px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.table-header {
+  font-size: 9.45px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.body-text {
+  font-size: 10.8px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.small-text {
+  font-size: 9.45px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.helper-text {
+  font-size: 8.1px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.button-text {
+  font-size: 9.45px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.sidebar-item {
+  font-size: 10.125px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.status-badge {
+  font-size: 8.1px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}

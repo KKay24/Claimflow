@@ -163,7 +163,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
   ];
 
   const getStatusBadge = (status: string) => {
-    const base = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ";
+    const base = "status-badge rounded-full px-2.5 py-0.5 uppercase ";
     switch (status) {
       case 'DRAFT':
         return <span className={base + "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}>Draft</span>;
@@ -187,7 +187,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
       <div className="flex justify-end lg:-mt-[72px] lg:mb-4">
         <button
           onClick={onCreate}
-          className="flex h-14 items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-bold px-7 rounded-[8px] shadow-lg shadow-blue-600/20 transition-all duration-200 cursor-pointer text-base"
+          className="button-text flex h-14 items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white px-7 rounded-[8px] shadow-lg shadow-blue-600/20 transition-all duration-200 cursor-pointer"
         >
           <Plus size={22} />
           Create New Claim
@@ -204,10 +204,10 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                   <Icon size={13} strokeWidth={2.4} />
                 </span>
                 <div className="min-w-0">
-                  <span className="whitespace-nowrap text-[13px] font-extrabold leading-snug">{card.label}</span>
+                  <span className="card-title whitespace-nowrap">{card.label}</span>
                 </div>
               </div>
-              <h3 className="text-[28px] font-extrabold leading-none text-[#07152f]">{card.count}</h3>
+              <h3 className="page-title text-[#07152f]">{card.count}</h3>
             </div>
           );
         })}
@@ -216,15 +216,15 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
       <div className="grid gap-5 border-t border-slate-200 pt-7 lg:grid-cols-[1.5fr_1.2fr_1.2fr_1.3fr]">
         <div className="relative">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#33476b]" size={24} />
-          <input placeholder="Search by title or description..." className="h-14 w-full rounded-[8px] border border-slate-200 bg-white pl-14 pr-4 outline-none" />
+          <input placeholder="Search by title or description..." className="body-text h-14 w-full rounded-[8px] border border-slate-200 bg-white pl-14 pr-4 outline-none" />
         </div>
-        <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5 font-bold">
+        <button className="button-text flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5">
           All Statuses <ChevronDown size={20} />
         </button>
-        <button className="flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5 font-bold">
+        <button className="button-text flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5">
           All Categories <ChevronDown size={20} />
         </button>
-        <button className="flex h-14 items-center gap-4 rounded-[8px] border border-slate-200 bg-white px-5 text-[#33476b]">
+        <button className="button-text flex h-14 items-center gap-4 rounded-[8px] border border-slate-200 bg-white px-5 text-[#33476b]">
           <CalendarDays size={22} /> Select Date Range
         </button>
       </div>
@@ -233,7 +233,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
         <div className="overflow-hidden">
           <table className="w-full table-fixed text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[#07152f] text-[13px] font-extrabold">
+              <tr className="table-header bg-slate-50 border-b border-slate-200 text-[#07152f]">
                 <th className="w-[34%] py-4 px-4">Title</th>
                 <th className="w-[13%] py-4 px-3">Category</th>
                 <th className="w-[12%] py-4 px-3">Amount</th>
@@ -248,20 +248,20 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
               ) : error ? (
                 <tr><td colSpan={6} className="py-12 text-center text-red-600">{error}</td></tr>
               ) : claims.map((claim) => (
-                <tr key={claim.id} className="text-[13px] text-[#10244a] hover:bg-slate-50">
+                <tr key={claim.id} className="body-text text-[#10244a] hover:bg-slate-50">
                   <td className="py-4 px-4">
-                    <div className="truncate font-extrabold text-[#07152f]">{claim.title}</div>
-                    {claim.description && <p className="mt-1 truncate text-[12px] text-[#33476b]">{claim.description}</p>}
+                    <div className="truncate text-[#07152f]">{claim.title}</div>
+                    {claim.description && <p className="helper-text mt-1 truncate text-[#33476b]">{claim.description}</p>}
                   </td>
-                  <td className="py-4 px-3 font-bold">{claim.category}</td>
-                  <td className="py-4 px-3 font-extrabold">${parseFloat(claim.amount as any).toFixed(2)}</td>
+                  <td className="py-4 px-3">{claim.category}</td>
+                  <td className="py-4 px-3">${parseFloat(claim.amount as any).toFixed(2)}</td>
                   <td className="py-4 px-3">{getStatusBadge(claim.status)}</td>
                   <td className="py-4 px-3">
                     {new Date(claim.updatedAt).toLocaleDateString()}<br />
                     <span className="text-[#33476b]">{new Date(claim.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </td>
                   <td className="py-4 px-3 text-right">
-                    <button onClick={() => onViewClaim(claim.id)} className="rounded-[8px] border border-blue-200 px-3 py-2 text-[13px] font-bold text-blue-600">
+                    <button onClick={() => onViewClaim(claim.id)} className="button-text rounded-[8px] border border-blue-200 px-3 py-2 text-blue-600">
                       View
                     </button>
                   </td>
@@ -270,7 +270,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
             </tbody>
           </table>
         </div>
-        <div className="flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[14px] text-[#33476b]">
+        <div className="small-text flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[#33476b]">
           <span>Showing 1 to {claims.length} of {claims.length} results</span>
           <span className="rounded-[8px] bg-blue-600 px-4 py-3 font-bold text-white">1</span>
         </div>

@@ -187,7 +187,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
   };
 
   const getStatusBadge = (status: string) => {
-    const base = "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ";
+    const base = "status-badge px-3 py-1 rounded-full uppercase ";
     switch (status) {
       case 'DRAFT':
         return <span className={base + "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}>Draft</span>;
@@ -242,7 +242,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <Loader2 className="animate-spin text-indigo-600 mb-4" size={40} />
-        <span className="text-slate-500 font-medium">Loading claim details...</span>
+        <span className="small-text text-slate-500">Loading claim details...</span>
       </div>
     );
   }
@@ -250,14 +250,14 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
   if (error || !claim) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <button onClick={onBack} className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 mb-6 font-semibold cursor-pointer">
+        <button onClick={onBack} className="button-text flex items-center gap-2 text-slate-500 hover:text-indigo-600 mb-6 cursor-pointer">
           <ArrowLeft size={18} /> Back to dashboard
         </button>
         <div className="bg-rose-50 border border-rose-200 text-rose-700 p-6 rounded-2xl flex items-center gap-3">
           <AlertTriangle />
           <div>
-            <h3 className="font-bold">Error loading claim</h3>
-            <p className="text-sm mt-1">{error || 'Claim not found.'}</p>
+            <h3 className="card-title">Error loading claim</h3>
+            <p className="small-text mt-1">{error || 'Claim not found.'}</p>
           </div>
         </div>
       </div>
@@ -276,11 +276,11 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     return (
       <div className="w-full space-y-5">
         <div>
-          <button onClick={onBack} className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+          <button onClick={onBack} className="button-text flex items-center gap-2 text-blue-600">
             <ArrowLeft size={17} /> Back to My Claims
           </button>
-          <h1 className="mt-5 text-[30px] font-extrabold leading-tight text-[#07152f]">Claim Details</h1>
-          <p className="mt-2 text-[17px] text-[#33476b]">View the details and progress of your claim.</p>
+          <h1 className="page-title mt-5 text-[#07152f]">Claim Details</h1>
+          <p className="body-text mt-2 text-[#33476b]">View the details and progress of your claim.</p>
         </div>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -290,9 +290,9 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 <Plane size={42} />
               </span>
               <div>
-                <h2 className="text-[26px] font-extrabold text-[#07152f]">{claim.title}</h2>
-                <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-[#10244a]">
-                  <span className="rounded-[6px] bg-blue-50 px-3 py-1 font-bold text-blue-600">{claim.category}</span>
+                <h2 className="section-title text-[#07152f]">{claim.title}</h2>
+                <div className="small-text mt-3 flex flex-wrap items-center gap-4 text-[#10244a]">
+                  <span className="status-badge rounded-[6px] bg-blue-50 px-3 py-1 text-blue-600">{claim.category}</span>
                   <span>Claim ID: {claim.id.slice(0, 13)}</span>
                   <Copy size={16} className="text-[#33476b]" />
                 </div>
@@ -301,8 +301,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
 
             <div className="text-left lg:text-right">
               {getStatusBadge(claim.status)}
-              <div className="mt-4 text-sm font-bold text-[#33476b]">Submitted on</div>
-              <div className="mt-1 text-base font-semibold text-[#07152f]">{formatShortDateTime(claim.createdAt)}</div>
+              <div className="small-text mt-4 text-[#33476b]">Submitted on</div>
+              <div className="body-text mt-1 text-[#07152f]">{formatShortDateTime(claim.createdAt)}</div>
             </div>
           </div>
         </section>
@@ -316,8 +316,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <FileText size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Description</h3>
-                    <p className="mt-2 text-sm text-[#10244a]">{claim.description || 'No description provided.'}</p>
+                    <h3 className="card-title text-[#07152f]">Description</h3>
+                    <p className="body-text mt-2 text-[#10244a]">{claim.description || 'No description provided.'}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -325,8 +325,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <Tag size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Category</h3>
-                    <p className="mt-2 text-sm text-[#10244a]">{claim.category}</p>
+                    <h3 className="card-title text-[#07152f]">Category</h3>
+                    <p className="body-text mt-2 text-[#10244a]">{claim.category}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -334,8 +334,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <DollarSign size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Amount</h3>
-                    <p className="mt-2 text-base font-semibold text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
+                    <h3 className="card-title text-[#07152f]">Amount</h3>
+                    <p className="body-text mt-2 text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -343,8 +343,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <Calendar size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Date of Expense</h3>
-                    <p className="mt-2 text-sm text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
+                    <h3 className="card-title text-[#07152f]">Date of Expense</h3>
+                    <p className="body-text mt-2 text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
                   </div>
                 </div>
               </div>
@@ -355,12 +355,12 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <Paperclip size={18} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Attachment</h3>
+                    <h3 className="card-title text-[#07152f]">Attachment</h3>
                     {claim.attachment ? (
                       <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
                         <div className="min-w-0">
-                          <div className="truncate text-sm font-extrabold text-[#07152f]">{claim.attachment.fileName}</div>
-                          <div className="text-xs text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
+                          <div className="body-text truncate text-[#07152f]">{claim.attachment.fileName}</div>
+                          <div className="helper-text text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
                         </div>
                         <a
                           href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
@@ -372,7 +372,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                         </a>
                       </div>
                     ) : (
-                      <p className="mt-2 text-sm text-[#33476b]">No attachment uploaded.</p>
+                      <p className="small-text mt-2 text-[#33476b]">No attachment uploaded.</p>
                     )}
                   </div>
                 </div>
@@ -382,8 +382,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <FileText size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Notes (Optional)</h3>
-                    <p className="mt-2 text-sm text-[#33476b]">-</p>
+                    <h3 className="card-title text-[#07152f]">Notes (Optional)</h3>
+                    <p className="small-text mt-2 text-[#33476b]">-</p>
                   </div>
                 </div>
               </div>
@@ -391,22 +391,22 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           </section>
 
           <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="text-base font-extrabold text-[#07152f]">Claim Information</h3>
-            <dl className="mt-6 space-y-5 text-sm">
+            <h3 className="card-title text-[#07152f]">Claim Information</h3>
+            <dl className="body-text mt-6 space-y-5">
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Status</dt>
+                <dt className="text-[#07152f]">Status</dt>
                 <dd>{getStatusBadge(claim.status)}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Submitted On</dt>
+                <dt className="text-[#07152f]">Submitted On</dt>
                 <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Last Updated</dt>
+                <dt className="text-[#07152f]">Last Updated</dt>
                 <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.updatedAt)}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Created On</dt>
+                <dt className="text-[#07152f]">Created On</dt>
                 <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
               </div>
             </dl>
@@ -414,7 +414,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
         </div>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-base font-extrabold text-[#07152f]">Claim Status Progress</h3>
+          <h3 className="card-title text-[#07152f]">Claim Status Progress</h3>
           <div className="mt-8 grid grid-cols-5 items-start">
             {progressSteps.map((step, index) => {
               const Icon = step.icon;
@@ -434,8 +434,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   >
                     <Icon size={22} />
                   </span>
-                  <div className="mt-3 text-sm font-extrabold text-[#07152f]">{step.label}</div>
-                  <div className="mt-1 text-xs text-[#33476b]">{step.date ? formatShortDateTime(step.date) : ''}</div>
+                  <div className="small-text mt-3 text-[#07152f]">{step.label}</div>
+                  <div className="helper-text mt-1 text-[#33476b]">{step.date ? formatShortDateTime(step.date) : ''}</div>
                 </div>
               );
             })}
@@ -443,10 +443,10 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
         </section>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="px-2 text-lg font-extrabold text-[#07152f]">Audit History</h3>
+          <h3 className="section-title px-2 text-[#07152f]">Audit History</h3>
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[940px] text-left text-sm">
-              <thead className="border-y border-slate-200 text-[#33476b]">
+            <table className="w-full min-w-[940px] text-left">
+              <thead className="table-header border-y border-slate-200 text-[#33476b]">
                 <tr>
                   <th className="px-4 py-3">Date & Time</th>
                   <th className="px-4 py-3">Action</th>
@@ -457,12 +457,12 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {auditRows.map((log) => (
-                  <tr key={log.id}>
+                  <tr key={log.id} className="body-text">
                     <td className="px-4 py-4">
                       <span className="mr-4 inline-block h-3 w-3 rounded-full bg-emerald-500" />
                       {formatShortDateTime(log.createdAt)}
                     </td>
-                    <td className="px-4 py-4 font-medium text-[#10244a]">
+                    <td className="px-4 py-4 text-[#10244a]">
                       {log.oldStatus ? 'Claim submitted' : 'Claim created'}
                     </td>
                     <td className="px-4 py-4">
@@ -475,12 +475,12 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <td className="px-4 py-4 text-[#10244a]">{log.comment || 'Initial claim created'}</td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-extrabold text-blue-700">
+                          <span className="status-badge flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700">
                           {log.user?.name?.charAt(0) || user.name.charAt(0)}
                         </span>
                         <span>
-                          <span className="block font-extrabold text-[#07152f]">{log.user?.name || user.name}</span>
-                          <span className="text-[#33476b]">({log.user?.role || 'Applicant'})</span>
+                          <span className="block text-[#07152f]">{log.user?.name || user.name}</span>
+                          <span className="small-text text-[#33476b]">({log.user?.role || 'Applicant'})</span>
                         </span>
                       </div>
                     </td>
@@ -493,22 +493,22 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <div className="mt-4 flex items-start gap-3 rounded-[8px] border border-blue-100 bg-blue-50 px-5 py-4 text-[#10244a]">
             <Info size={20} className="mt-0.5 shrink-0 text-blue-600" />
             <div>
-              <div className="font-extrabold text-blue-700">Note</div>
-              <p className="mt-1 text-sm">You will be notified once your claim is reviewed by the finance team.</p>
+              <div className="button-text text-blue-700">Note</div>
+              <p className="small-text mt-1">You will be notified once your claim is reviewed by the finance team.</p>
             </div>
           </div>
         </section>
 
         {claim.status === 'DRAFT' && (
           <div className="flex justify-end gap-3">
-            <button onClick={openEditModal} className="rounded-[8px] border border-slate-200 px-5 py-3 text-sm font-extrabold text-[#07152f]">
+            <button onClick={openEditModal} className="button-text rounded-[8px] border border-slate-200 px-5 py-3 text-[#07152f]">
               <Edit2 size={16} className="mr-2 inline" />
               Edit Draft
             </button>
             <button
               onClick={() => handleStatusTransition('SUBMITTED')}
               disabled={submittingAction}
-              className="rounded-[8px] bg-blue-600 px-5 py-3 text-sm font-extrabold text-white disabled:opacity-50"
+              className="button-text rounded-[8px] bg-blue-600 px-5 py-3 text-white disabled:opacity-50"
             >
               {submittingAction ? <Loader2 size={16} className="mr-2 inline animate-spin" /> : <Send size={16} className="mr-2 inline" />}
               Submit Claim
@@ -565,11 +565,11 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     return (
       <div className="w-full space-y-5">
         <div>
-          <button onClick={onBack} className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+          <button onClick={onBack} className="button-text flex items-center gap-2 text-blue-600">
             <ArrowLeft size={17} /> Back to Review Claims
           </button>
-          <h1 className="mt-5 text-[30px] font-extrabold leading-tight text-[#07152f]">Claim Details</h1>
-          <p className="mt-2 text-[17px] text-[#33476b]">Review the claim details and take appropriate action.</p>
+          <h1 className="page-title mt-5 text-[#07152f]">Claim Details</h1>
+          <p className="body-text mt-2 text-[#33476b]">Review the claim details and take appropriate action.</p>
         </div>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -579,14 +579,14 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 <Plane size={42} />
               </span>
               <div>
-                <h2 className="text-[26px] font-extrabold text-[#07152f]">{claim.title}</h2>
-                <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-[#10244a]">
-                  <span className="rounded-[6px] bg-blue-50 px-3 py-1 font-bold text-blue-600">{claim.category}</span>
+                <h2 className="section-title text-[#07152f]">{claim.title}</h2>
+                <div className="small-text mt-3 flex flex-wrap items-center gap-4 text-[#10244a]">
+                  <span className="status-badge rounded-[6px] bg-blue-50 px-3 py-1 text-blue-600">{claim.category}</span>
                   <span>Claim ID: {claim.id.slice(0, 13)}</span>
                   <Copy size={16} className="text-[#33476b]" />
                   {claim.applicant && (
                     <span>
-                      Applicant: <span className="font-extrabold text-blue-600">{claim.applicant.name}</span> ({claim.applicant.email})
+                      Applicant: <span className="text-blue-600">{claim.applicant.name}</span> ({claim.applicant.email})
                     </span>
                   )}
                 </div>
@@ -595,8 +595,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
 
             <div className="text-left lg:text-right">
               {getStatusBadge(claim.status)}
-              <div className="mt-4 text-sm font-bold text-[#33476b]">Submitted on</div>
-              <div className="mt-1 text-base font-semibold text-[#07152f]">{formatShortDateTime(claim.createdAt)}</div>
+              <div className="small-text mt-4 text-[#33476b]">Submitted on</div>
+              <div className="body-text mt-1 text-[#07152f]">{formatShortDateTime(claim.createdAt)}</div>
             </div>
           </div>
         </section>
@@ -610,8 +610,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <FileText size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Description</h3>
-                    <p className="mt-2 text-sm text-[#10244a]">{claim.description || 'No description provided.'}</p>
+                    <h3 className="card-title text-[#07152f]">Description</h3>
+                    <p className="body-text mt-2 text-[#10244a]">{claim.description || 'No description provided.'}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -619,8 +619,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <Tag size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Category</h3>
-                    <p className="mt-2 text-sm text-[#10244a]">{claim.category}</p>
+                    <h3 className="card-title text-[#07152f]">Category</h3>
+                    <p className="body-text mt-2 text-[#10244a]">{claim.category}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -628,8 +628,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <DollarSign size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Amount</h3>
-                    <p className="mt-2 text-base font-semibold text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
+                    <h3 className="card-title text-[#07152f]">Amount</h3>
+                    <p className="body-text mt-2 text-[#07152f]">USD {parseFloat(claim.amount as any).toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -637,8 +637,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <Calendar size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Date of Expense</h3>
-                    <p className="mt-2 text-sm text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
+                    <h3 className="card-title text-[#07152f]">Date of Expense</h3>
+                    <p className="body-text mt-2 text-[#10244a]">{formatDateOnly(claim.createdAt)}</p>
                   </div>
                 </div>
               </div>
@@ -649,12 +649,12 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <Paperclip size={18} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Attachment</h3>
+                    <h3 className="card-title text-[#07152f]">Attachment</h3>
                     {claim.attachment ? (
                       <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
                         <div className="min-w-0">
-                          <div className="truncate text-sm font-extrabold text-[#07152f]">{claim.attachment.fileName}</div>
-                          <div className="text-xs text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
+                          <div className="body-text truncate text-[#07152f]">{claim.attachment.fileName}</div>
+                          <div className="helper-text text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
                         </div>
                         <a
                           href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
@@ -666,7 +666,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                         </a>
                       </div>
                     ) : (
-                      <p className="mt-2 text-sm text-[#33476b]">No attachment uploaded.</p>
+                      <p className="small-text mt-2 text-[#33476b]">No attachment uploaded.</p>
                     )}
                   </div>
                 </div>
@@ -676,8 +676,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     <FileText size={18} />
                   </span>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#07152f]">Notes from Applicant</h3>
-                    <p className="mt-2 text-sm text-[#33476b]">-</p>
+                    <h3 className="card-title text-[#07152f]">Notes from Applicant</h3>
+                    <p className="small-text mt-2 text-[#33476b]">-</p>
                   </div>
                 </div>
               </div>
@@ -685,22 +685,22 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           </section>
 
           <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="text-base font-extrabold text-[#07152f]">Claim Information</h3>
-            <dl className="mt-6 space-y-5 text-sm">
+            <h3 className="card-title text-[#07152f]">Claim Information</h3>
+            <dl className="body-text mt-6 space-y-5">
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Status</dt>
+                <dt className="text-[#07152f]">Status</dt>
                 <dd>{getStatusBadge(claim.status)}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Submitted On</dt>
+                <dt className="text-[#07152f]">Submitted On</dt>
                 <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Last Updated</dt>
+                <dt className="text-[#07152f]">Last Updated</dt>
                 <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.updatedAt)}</dd>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <dt className="font-bold text-[#07152f]">Created On</dt>
+                <dt className="text-[#07152f]">Created On</dt>
                 <dd className="text-right text-[#10244a]">{formatShortDateTime(claim.createdAt)}</dd>
               </div>
             </dl>
@@ -708,7 +708,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
         </div>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-base font-extrabold text-[#07152f]">Claim Status Progress</h3>
+          <h3 className="card-title text-[#07152f]">Claim Status Progress</h3>
           <div className="mt-8 grid grid-cols-5 items-start">
             {progressSteps.map((step, index) => {
               const Icon = step.icon;
@@ -728,8 +728,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   >
                     <Icon size={22} />
                   </span>
-                  <div className="mt-3 text-sm font-extrabold text-[#07152f]">{step.label}</div>
-                  <div className="mt-1 text-xs text-[#33476b]">{step.date ? formatShortDateTime(step.date) : ''}</div>
+                  <div className="small-text mt-3 text-[#07152f]">{step.label}</div>
+                  <div className="helper-text mt-1 text-[#33476b]">{step.date ? formatShortDateTime(step.date) : ''}</div>
                 </div>
               );
             })}
@@ -738,10 +738,10 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
 
         <div className="grid gap-5 xl:grid-cols-[1.9fr_1fr]">
           <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="px-2 text-lg font-extrabold text-[#07152f]">Audit History</h3>
+            <h3 className="section-title px-2 text-[#07152f]">Audit History</h3>
             <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[760px] text-left text-sm">
-                <thead className="border-y border-slate-200 text-[#33476b]">
+              <table className="w-full min-w-[760px] text-left">
+                <thead className="table-header border-y border-slate-200 text-[#33476b]">
                   <tr>
                     <th className="px-4 py-3">Date & Time</th>
                     <th className="px-4 py-3">Action</th>
@@ -752,12 +752,12 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {auditRows.map((log) => (
-                    <tr key={log.id}>
+                    <tr key={log.id} className="body-text">
                       <td className="px-4 py-4">
                         <span className={`mr-4 inline-block h-3 w-3 rounded-full ${log.newStatus === 'UNDER_REVIEW' ? 'bg-violet-500' : log.newStatus === 'SUBMITTED' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                         {formatShortDateTime(log.createdAt)}
                       </td>
-                      <td className="px-4 py-4 font-medium text-[#10244a]">
+                      <td className="px-4 py-4 text-[#10244a]">
                         {log.newStatus === 'UNDER_REVIEW' ? 'Moved to review' : log.oldStatus ? 'Claim submitted' : 'Claim created'}
                       </td>
                       <td className="px-4 py-4">
@@ -768,8 +768,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-[#10244a]">
-                        <span className="font-extrabold">{log.user?.name || 'System'}</span>
-                        <span className="block text-[#33476b]">({log.user?.role || 'Reviewer'})</span>
+                        <span>{log.user?.name || 'System'}</span>
+                        <span className="small-text block text-[#33476b]">({log.user?.role || 'Reviewer'})</span>
                       </td>
                       <td className="px-4 py-4 text-[#10244a]">{log.comment || 'Initial claim created'}</td>
                     </tr>
@@ -777,52 +777,52 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 </tbody>
               </table>
             </div>
-            <button className="mt-4 rounded-[8px] border border-blue-200 px-5 py-3 text-sm font-extrabold text-blue-600">
+            <button className="button-text mt-4 rounded-[8px] border border-blue-200 px-5 py-3 text-blue-600">
               View Full Audit History
             </button>
           </section>
 
           <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-extrabold text-[#07152f]">Review Actions</h3>
-            <p className="mt-2 text-sm text-[#33476b]">Please review the claim details and choose an action.</p>
+            <h3 className="section-title text-[#07152f]">Review Actions</h3>
+            <p className="small-text mt-2 text-[#33476b]">Please review the claim details and choose an action.</p>
 
             <div className="mt-4 space-y-3">
               {claim.status === 'SUBMITTED' && (
                 <button
                   onClick={() => handleStatusTransition('UNDER_REVIEW')}
                   disabled={submittingAction}
-                  className="w-full rounded-[8px] bg-blue-600 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+                  className="button-text w-full rounded-[8px] bg-blue-600 px-4 py-3 text-left text-white disabled:opacity-50"
                 >
                   Start Review
-                  <span className="block text-xs font-semibold">Move this claim into review</span>
+                  <span className="helper-text block">Move this claim into review</span>
                 </button>
               )}
 
               <button
                 onClick={() => handleStatusTransition('APPROVED')}
                 disabled={submittingAction || !reviewActionAvailable}
-                className="w-full rounded-[8px] bg-emerald-600 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+                className="button-text w-full rounded-[8px] bg-emerald-600 px-4 py-3 text-left text-white disabled:opacity-50"
               >
                 Approve
-                <span className="block text-xs font-semibold">Approve this claim</span>
+                <span className="helper-text block">Approve this claim</span>
               </button>
 
               <button
                 onClick={() => setActiveAction(activeAction === 'REJECT' ? null : 'REJECT')}
                 disabled={!reviewActionAvailable}
-                className="w-full rounded-[8px] bg-red-600 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+                className="button-text w-full rounded-[8px] bg-red-600 px-4 py-3 text-left text-white disabled:opacity-50"
               >
                 Reject
-                <span className="block text-xs font-semibold">Reject this claim</span>
+                <span className="helper-text block">Reject this claim</span>
               </button>
 
               <button
                 onClick={() => setActiveAction(activeAction === 'RETURN' ? null : 'RETURN')}
                 disabled={!reviewActionAvailable}
-                className="w-full rounded-[8px] bg-orange-500 px-4 py-3 text-left font-extrabold text-white disabled:opacity-50"
+                className="button-text w-full rounded-[8px] bg-orange-500 px-4 py-3 text-left text-white disabled:opacity-50"
               >
                 Return for Changes
-                <span className="block text-xs font-semibold">Send back to applicant for changes</span>
+                <span className="helper-text block">Send back to applicant for changes</span>
               </button>
 
               {activeAction && (

@@ -51,7 +51,7 @@ const badge = (status: string | null) => {
     REJECTED: 'bg-red-50 text-red-700 border-red-200',
     RETURNED_FOR_CHANGES: 'bg-orange-50 text-orange-700 border-orange-200',
   };
-  return <span className={`rounded-[6px] border px-3 py-1 text-xs font-extrabold ${palette[status] || palette.DRAFT}`}>{status}</span>;
+  return <span className={`status-badge rounded-[6px] border px-3 py-1 ${palette[status] || palette.DRAFT}`}>{status}</span>;
 };
 
 const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
@@ -104,30 +104,30 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search by claim title or ID..."
-                className="h-12 w-full rounded-[8px] border border-slate-200 pl-12 pr-4 text-sm outline-none focus:border-blue-500"
+                className="small-text h-12 w-full rounded-[8px] border border-slate-200 pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
             {['All Claims', 'All Actions', 'All Users'].map((label) => (
-              <button key={label} className="flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4 text-sm font-bold">
+              <button key={label} className="button-text flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4">
                 {label}
                 <ChevronDown size={18} />
               </button>
             ))}
-            <button className="flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4 text-sm font-bold">
+            <button className="button-text flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4">
               <CalendarDays size={20} />
               01 May 2024 - 12 May 2024
               <ChevronDown size={18} className="ml-auto" />
             </button>
-            <button className="h-12 rounded-[8px] border border-slate-200 px-4 text-sm font-bold text-[#33476b]">Clear Filters</button>
+            <button className="button-text h-12 rounded-[8px] border border-slate-200 px-4 text-[#33476b]">Clear Filters</button>
           </div>
         </div>
 
         <div className="mt-5 flex items-center justify-between rounded-[8px] border border-blue-100 bg-blue-50 px-5 py-4">
-          <div className="flex items-center gap-4 text-[#33476b]">
+          <div className="body-text flex items-center gap-4 text-[#33476b]">
             <Info size={22} className="text-blue-600" />
-            <span className="font-semibold">{rows.length} audit records found</span>
+            <span>{rows.length} audit records found</span>
           </div>
-          <button className="flex h-11 items-center gap-3 rounded-[8px] border border-blue-300 px-5 font-extrabold text-blue-600">
+          <button className="button-text flex h-11 items-center gap-3 rounded-[8px] border border-blue-300 px-5 text-blue-600">
             <Download size={19} />
             Export
           </button>
@@ -135,7 +135,7 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
 
         <div className="mt-5 overflow-hidden rounded-[8px] border border-slate-200">
           <table className="w-full min-w-[1100px] text-left">
-            <thead className="bg-slate-50 text-sm font-extrabold text-[#07152f]">
+            <thead className="table-header bg-slate-50 text-[#07152f]">
               <tr>
                 <th className="px-5 py-4">Date & Time</th>
                 <th className="px-5 py-4">Claim</th>
@@ -154,7 +154,7 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
                   </td>
                 </tr>
               ) : rows.map(({ claim, log }) => (
-                <tr key={log.id} className="text-sm text-[#10244a]">
+                <tr key={log.id} className="body-text text-[#10244a]">
                   <td className="px-5 py-4">{new Date(log.createdAt).toLocaleString()}</td>
                   <td className="px-5 py-4">
                     <button onClick={() => onViewClaim(claim.id)} className="flex items-center gap-3 text-left">
@@ -162,8 +162,8 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
                         <Plane size={22} />
                       </span>
                       <span>
-                        <span className="block font-extrabold">{claim.title}</span>
-                        <span className="block text-[#33476b]">{claim.id.slice(0, 8)}</span>
+                        <span className="block">{claim.title}</span>
+                        <span className="small-text block text-[#33476b]">{claim.id.slice(0, 8)}</span>
                       </span>
                     </button>
                   </td>
@@ -173,7 +173,7 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">{badge(log.oldStatus)} <span>→</span> {badge(log.newStatus)}</div>
                   </td>
-                  <td className="px-5 py-4 font-semibold">{log.user?.name || 'System'}</td>
+                  <td className="px-5 py-4">{log.user?.name || 'System'}</td>
                   <td className="px-5 py-4">{badge(log.user?.role || user?.role || '')}</td>
                   <td className="px-5 py-4">{log.comment || '-'}</td>
                 </tr>

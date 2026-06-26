@@ -24,7 +24,7 @@ function ClaimFlowApp() {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="text-sm font-semibold text-slate-500">Loading ClaimFlow...</div>
+        <div className="small-text text-slate-500">Loading ClaimFlow...</div>
       </main>
     );
   }
@@ -46,9 +46,9 @@ function ClaimFlowApp() {
         <AuditHistory onViewClaim={setSelectedClaimId} />
       ) : activeView === 'profile' ? (
         <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-extrabold text-[#07152f]">{user?.name}</p>
-          <p className="mt-1 text-slate-500">{user?.role}</p>
-          <p className="mt-1 text-slate-500">{user?.email}</p>
+          <p className="section-title text-[#07152f]">{user?.name}</p>
+          <p className="small-text mt-1 text-slate-500">{user?.role}</p>
+          <p className="small-text mt-1 text-slate-500">{user?.email}</p>
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <section className="rounded-[8px] border border-blue-200 bg-blue-50 p-6">
               <div className="flex items-center gap-4">
@@ -56,11 +56,11 @@ function ClaimFlowApp() {
                   <Headphones size={24} />
                 </span>
                 <div>
-                  <h2 className="text-lg font-extrabold text-[#07152f]">Need Help?</h2>
-                  <p className="mt-1 text-sm text-[#33476b]">Contact support for assistance.</p>
+                  <h2 className="card-title text-[#07152f]">Need Help?</h2>
+                  <p className="small-text mt-1 text-[#33476b]">Contact support for assistance.</p>
                 </div>
               </div>
-              <button className="mt-5 h-11 w-full rounded-[8px] border border-blue-500 bg-white text-sm font-extrabold text-blue-600">
+              <button className="button-text mt-5 h-11 w-full rounded-[8px] border border-blue-500 bg-white text-blue-600">
                 Contact Support
               </button>
             </section>
@@ -71,11 +71,11 @@ function ClaimFlowApp() {
                   <LogOut size={24} />
                 </span>
                 <div>
-                  <h2 className="text-lg font-extrabold text-[#07152f]">Logout</h2>
-                  <p className="mt-1 text-sm text-[#33476b]">End your current session.</p>
+                  <h2 className="card-title text-[#07152f]">Logout</h2>
+                  <p className="small-text mt-1 text-[#33476b]">End your current session.</p>
                 </div>
               </div>
-              <button onClick={logout} className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-[8px] bg-red-600 text-sm font-extrabold text-white">
+              <button onClick={logout} className="button-text mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-[8px] bg-red-600 text-white">
                 <LogOut size={18} />
                 Logout
               </button>

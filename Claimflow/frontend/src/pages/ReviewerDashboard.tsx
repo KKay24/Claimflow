@@ -84,7 +84,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
   const totalCount = claims.length;
 
   const getStatusBadge = (claimStatus: string) => {
-    const base = 'inline-flex rounded-[6px] border px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide ';
+    const base = 'status-badge inline-flex rounded-[6px] border px-3 py-1 uppercase ';
     switch (claimStatus) {
       case 'SUBMITTED':
         return <span className={base + 'border-amber-200 bg-amber-50 text-amber-700'}>Submitted</span>;
@@ -110,7 +110,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
       EQUIPMENT: 'border-violet-200 bg-violet-50 text-violet-700',
     };
     return (
-      <span className={`inline-flex rounded-[6px] border px-3 py-1 text-xs font-extrabold ${palette[category] || 'border-slate-200 bg-slate-50 text-slate-700'}`}>
+      <span className={`status-badge inline-flex rounded-[6px] border px-3 py-1 ${palette[category] || 'border-slate-200 bg-slate-50 text-slate-700'}`}>
         {category.replaceAll('_', ' ')}
       </span>
     );
@@ -140,11 +140,11 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                   <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
                     <Icon size={12} strokeWidth={2.4} />
                   </span>
-                  <h3 className="min-w-0 whitespace-nowrap text-[12px] font-extrabold leading-snug">{card.label}</h3>
+                  <h3 className="card-title min-w-0 whitespace-nowrap">{card.label}</h3>
                 </div>
                 <div className="flex items-baseline gap-3">
-                  <div className="text-[26px] font-extrabold leading-none text-[#07152f]">{card.value}</div>
-                  <p className="text-[13px] font-medium leading-snug text-[#33476b]">{card.caption}</p>
+                  <div className="page-title text-[#07152f]">{card.value}</div>
+                  <p className="small-text text-[#33476b]">{card.caption}</p>
                 </div>
               </div>
             </section>
@@ -160,25 +160,25 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by title, applicant or ID..."
-              className="h-11 w-full rounded-[8px] border border-slate-200 bg-white pl-10 pr-3 text-[12px] outline-none focus:border-blue-500"
+              className="helper-text h-11 w-full rounded-[8px] border border-slate-200 bg-white pl-10 pr-3 outline-none focus:border-blue-500"
             />
           </div>
-          <button className="flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3 text-[12px] font-extrabold">
+          <button className="button-text flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3">
             All Statuses <ChevronDown size={16} />
           </button>
-          <button className="flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3 text-[12px] font-extrabold">
+          <button className="button-text flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3">
             All Categories <ChevronDown size={16} />
           </button>
-          <button className="flex h-11 items-center gap-2 rounded-[8px] border border-slate-200 px-3 text-left text-[12px] font-extrabold">
+          <button className="button-text flex h-11 items-center gap-2 rounded-[8px] border border-slate-200 px-3 text-left">
             <CalendarDays size={17} />
             <span className="min-w-0 leading-tight">
-              <span className="block text-[10px] text-[#33476b]">Date Range</span>
+              <span className="helper-text block text-[#33476b]">Date Range</span>
               <span className="block whitespace-nowrap">01 May 2024 - 12 May 2024</span>
             </span>
             <ChevronDown size={16} className="ml-auto" />
           </button>
-          <button className="h-11 rounded-[8px] border border-slate-200 px-3 text-[12px] font-extrabold text-[#33476b]">Clear Filters</button>
-          <button className="flex h-11 items-center justify-center gap-2 rounded-[8px] bg-blue-600 px-3 text-[12px] font-extrabold text-white">
+          <button className="button-text h-11 rounded-[8px] border border-slate-200 px-3 text-[#33476b]">Clear Filters</button>
+          <button className="button-text flex h-11 items-center justify-center gap-2 rounded-[8px] bg-blue-600 px-3 text-white">
             <Download size={17} />
             Export
           </button>
@@ -187,18 +187,18 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
 
       <section className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="text-lg font-extrabold text-[#07152f]">Recent Claims</h2>
-          <button className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+          <h2 className="section-title text-[#07152f]">Recent Claims</h2>
+          <button className="button-text flex items-center gap-2 text-blue-600">
             View all claims <ArrowRight size={18} />
           </button>
         </div>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="animate-spin text-indigo-600" size={32} />
-            <span className="text-xs font-semibold text-slate-400">Loading review queue...</span>
+            <span className="helper-text text-slate-400">Loading review queue...</span>
           </div>
         ) : error ? (
-          <div className="p-8 text-center text-rose-500 text-sm flex items-center justify-center gap-2">
+          <div className="small-text p-8 text-center text-rose-500 flex items-center justify-center gap-2">
             <AlertCircle size={18} />
             {error}
           </div>
@@ -207,15 +207,15 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
             <div className="bg-amber-50 dark:bg-amber-950/20 w-12 h-12 rounded-2xl flex items-center justify-center text-amber-600 mx-auto mb-4">
               <ShieldCheck size={24} />
             </div>
-            <h4 className="text-slate-900 dark:text-white font-bold text-sm">No claims match this view</h4>
-            <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">
+            <h4 className="card-title text-slate-900 dark:text-white">No claims match this view</h4>
+            <p className="helper-text text-slate-400 mt-1 max-w-sm mx-auto">
               Adjust the status filter or search query to find another claim.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1050px] border-collapse text-left">
-              <thead className="border-y border-slate-200 bg-slate-50 text-sm font-extrabold text-[#07152f]">
+              <thead className="table-header border-y border-slate-200 bg-slate-50 text-[#07152f]">
                 <tr>
                   <th className="px-5 py-4">Claim ID</th>
                   <th className="px-5 py-4">Title</th>
@@ -240,19 +240,19 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                     }}
                     tabIndex={0}
                     role="button"
-                    className="cursor-pointer text-sm text-[#10244a] transition hover:bg-slate-50 focus:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                    className="body-text cursor-pointer text-[#10244a] transition hover:bg-slate-50 focus:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                   >
-                    <td className="px-5 py-4 font-extrabold text-blue-600">CLM-{claim.id.slice(0, 8)}</td>
+                    <td className="px-5 py-4 text-blue-600">CLM-{claim.id.slice(0, 8)}</td>
                     <td className="px-5 py-4">
-                      <div className="font-extrabold text-[#07152f]">{claim.title}</div>
-                      {claim.description && <p className="mt-1 text-[#33476b]">{claim.description}</p>}
+                      <div className="text-[#07152f]">{claim.title}</div>
+                      {claim.description && <p className="small-text mt-1 text-[#33476b]">{claim.description}</p>}
                     </td>
                     <td className="px-5 py-4">
-                      <div className="font-extrabold">{claim.applicant?.name || 'Unknown'}</div>
-                      <div className="text-[#33476b]">{claim.applicant?.email}</div>
+                      <div>{claim.applicant?.name || 'Unknown'}</div>
+                      <div className="small-text text-[#33476b]">{claim.applicant?.email}</div>
                     </td>
                     <td className="px-5 py-4">{categoryBadge(claim.category)}</td>
-                    <td className="px-5 py-4 font-extrabold">USD {parseFloat(claim.amount as any).toFixed(2)}</td>
+                    <td className="px-5 py-4">USD {parseFloat(claim.amount as any).toFixed(2)}</td>
                     <td className="px-5 py-4">{getStatusBadge(claim.status)}</td>
                     <td className="px-5 py-4">
                       {new Date(claim.createdAt).toLocaleDateString()}<br />
@@ -264,7 +264,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                           event.stopPropagation();
                           onViewClaim(claim.id);
                         }}
-                        className="rounded-[8px] border border-blue-200 px-5 py-2 text-sm font-extrabold text-blue-600"
+                        className="button-text rounded-[8px] border border-blue-200 px-5 py-2 text-blue-600"
                       >
                         {claim.status === 'SUBMITTED' ? 'Start Review' : 'View'}
                       </button>
@@ -275,18 +275,18 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
             </table>
           </div>
         )}
-        <div className="flex items-center justify-between border-t border-slate-200 px-5 py-4 text-sm text-[#33476b]">
+        <div className="small-text flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[#33476b]">
           <span>Showing 1 to {recentClaims.length} of {filteredClaims.length} results</span>
           <div className="flex items-center gap-3">
-            <span className="rounded-[8px] bg-blue-600 px-4 py-3 font-extrabold text-white">1</span>
-            <span className="rounded-[8px] border border-slate-200 px-4 py-3 font-extrabold">2</span>
+            <span className="button-text rounded-[8px] bg-blue-600 px-4 py-3 text-white">1</span>
+            <span className="button-text rounded-[8px] border border-slate-200 px-4 py-3">2</span>
           </div>
         </div>
       </section>
 
       <div className="grid gap-5 xl:grid-cols-[1fr_1fr]">
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-extrabold text-[#07152f]">Claims by Status</h2>
+          <h2 className="section-title text-[#07152f]">Claims by Status</h2>
           <div className="mt-6 grid gap-6 md:grid-cols-[220px_1fr] md:items-center">
             <div
               className="mx-auto flex h-40 w-40 items-center justify-center rounded-full"
@@ -295,11 +295,11 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
               }}
             >
               <div className="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white text-center">
-                <span className="text-2xl font-extrabold text-[#07152f]">{totalCount}</span>
-                <span className="text-xs font-semibold text-[#33476b]">Total</span>
+                <span className="section-title text-[#07152f]">{totalCount}</span>
+                <span className="helper-text text-[#33476b]">Total</span>
               </div>
             </div>
-            <div className="space-y-3 text-sm">
+            <div className="small-text space-y-3">
               {[
                 ['Under Review', reviewCount, 'bg-violet-600'],
                 ['Submitted', submittedCount, 'bg-amber-500'],
@@ -308,7 +308,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                 ['Returned', returnedCount, 'bg-orange-400'],
               ].map(([label, count, dot]) => (
                 <div key={label as string} className="grid grid-cols-[1fr_auto] items-center gap-4">
-                  <span className="flex items-center gap-3 font-bold text-[#10244a]">
+                  <span className="flex items-center gap-3 text-[#10244a]">
                     <span className={`h-3 w-3 rounded-full ${dot}`} />
                     {label}
                   </span>
@@ -321,8 +321,8 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
 
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-extrabold text-[#07152f]">My Review Activity</h2>
-            <button className="flex items-center gap-2 text-sm font-extrabold text-blue-600">
+            <h2 className="section-title text-[#07152f]">My Review Activity</h2>
+            <button className="button-text flex items-center gap-2 text-blue-600">
               View full activity <ArrowRight size={18} />
             </button>
           </div>
@@ -340,11 +340,11 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                       <ActivityIcon size={20} />
                     </span>
                     <div>
-                      <div className="font-extrabold text-[#07152f]">{title as string}</div>
-                      <div className="text-sm text-[#33476b]">{detail as string}</div>
+                      <div className="body-text text-[#07152f]">{title as string}</div>
+                      <div className="small-text text-[#33476b]">{detail as string}</div>
                     </div>
                   </div>
-                  <span className="text-sm text-[#33476b]">{date as string}</span>
+                  <span className="small-text text-[#33476b]">{date as string}</span>
                 </div>
               );
             })}

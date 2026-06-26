@@ -59,21 +59,21 @@ const Login: React.FC = () => {
           <div className="bg-indigo-600 p-3 rounded-2xl text-white shadow-xl shadow-indigo-600/30 mb-4">
             <FileText size={32} />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">ClaimFlow</h1>
-          <p className="text-sm text-slate-400 mt-2 text-center">
+          <h1 className="page-title text-white">ClaimFlow</h1>
+          <p className="small-text text-slate-400 mt-2 text-center">
             Expense Reimbursement Submission & Approval Workflow
           </p>
         </div>
 
         {error && (
-          <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm p-4 rounded-xl mb-6">
+          <div className="small-text bg-rose-500/10 border border-rose-500/30 text-rose-400 p-4 rounded-xl mb-6">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+            <label className="helper-text block uppercase text-slate-400 mb-2">
               Email Address
             </label>
             <div className="relative">
@@ -85,14 +85,14 @@ const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-white rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none transition-all"
+                className="small-text w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-white rounded-xl pl-11 pr-4 py-3.5 outline-none transition-all"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+            <label className="helper-text block uppercase text-slate-400 mb-2">
               Password
             </label>
             <div className="relative">
@@ -104,7 +104,7 @@ const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-white rounded-xl pl-11 pr-4 py-3.5 text-sm outline-none transition-all"
+                className="small-text w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-white rounded-xl pl-11 pr-4 py-3.5 outline-none transition-all"
                 required
               />
             </div>
@@ -113,7 +113,7 @@ const Login: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 hover:gap-3 transition-all duration-200 cursor-pointer disabled:opacity-50"
+            className="button-text w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 hover:gap-3 transition-all duration-200 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? 'Signing in...' : 'Sign In'}
             {!isSubmitting && <ArrowRight size={18} />}
@@ -124,7 +124,7 @@ const Login: React.FC = () => {
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-800"></div>
           </div>
-          <div className="relative flex justify-center text-xs uppercase tracking-wider font-bold">
+          <div className="helper-text relative flex justify-center uppercase">
             <span className="bg-slate-900 px-3 text-slate-500">Quick Test Accounts</span>
           </div>
         </div>
@@ -137,8 +137,8 @@ const Login: React.FC = () => {
             className="flex flex-col items-center gap-2 bg-slate-950 hover:bg-slate-800/50 border border-slate-800 hover:border-indigo-500/50 p-4 rounded-xl cursor-pointer transition-all duration-200 group text-center"
           >
             <User size={20} className="text-indigo-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-semibold text-slate-200">Applicant Log In</span>
-            <span className="text-[10px] text-slate-500">John Applicant</span>
+            <span className="button-text text-slate-200">Applicant Log In</span>
+            <span className="helper-text text-slate-500">John Applicant</span>
           </button>
 
           <button
@@ -148,8 +148,8 @@ const Login: React.FC = () => {
             className="flex flex-col items-center gap-2 bg-slate-950 hover:bg-slate-800/50 border border-slate-800 hover:border-amber-500/50 p-4 rounded-xl cursor-pointer transition-all duration-200 group text-center"
           >
             <ShieldCheck size={20} className="text-amber-400 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-semibold text-slate-200">Reviewer Log In</span>
-            <span className="text-[10px] text-slate-500">Sarah Reviewer</span>
+            <span className="button-text text-slate-200">Reviewer Log In</span>
+            <span className="helper-text text-slate-500">Sarah Reviewer</span>
           </button>
         </div>
       </div>
