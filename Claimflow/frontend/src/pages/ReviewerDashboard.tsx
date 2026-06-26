@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AlertCircle,
   ArrowRight,
@@ -44,6 +44,11 @@ interface ReviewerDashboardProps {
 const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) => {
   const [claims, setClaims] = useState<Application[]>([]);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [categoryFilter, setCategoryFilter] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [showAllClaims, setShowAllClaims] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,10 +69,12 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
     fetchClaims();
   }, []);
 
-  const filteredClaims = claims.filter((claim) => {
+  const filteredClaims = useMemo(() => claims.filter((claim) => {
     const query = search.trim().toLowerCase();
-    if (!query) return true;
-    return [
+    const fromTime = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
+    const toTime = dateTo ? new Date(`${dateTo}T23:59:59`).getTime() : null;
+    const createdTime = new Date(claim.createdAt).getTime();
+    const matchesSearch = !query || [
       claim.title,
       claim.category,
       claim.status,
@@ -76,7 +83,15 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
     ]
       .filter(Boolean)
       .some((value) => value!.toLowerCase().includes(query));
-  });
+
+    return (
+      matchesSearch &&
+      (statusFilter === 'ALL' || claim.status === statusFilter) &&
+      (categoryFilter === 'ALL' || claim.category === categoryFilter) &&
+      (!fromTime || createdTime >= fromTime) &&
+      (!toTime || createdTime <= toTime)
+    );
+  }), [categoryFilter, claims, dateFrom, dateTo, search, statusFilter]);
 
   const submittedCount = claims.filter((claim) => claim.status === 'SUBMITTED').length;
   const reviewCount = claims.filter((claim) => claim.status === 'UNDER_REVIEW').length;
@@ -119,15 +134,52 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
   };
 
   const statCards = [
-    { label: 'Total Claims', value: totalCount, caption: 'All time', icon: FileSpreadsheet, classes: 'border-blue-200 text-blue-700 bg-blue-50' },
-    { label: 'Submitted', value: submittedCount, caption: 'Awaiting review', icon: Send, classes: 'border-amber-200 text-amber-700 bg-amber-50' },
-    { label: 'Under Review', value: reviewCount, caption: 'In progress', icon: Timer, classes: 'border-violet-200 text-violet-700 bg-violet-50' },
-    { label: 'Approved', value: approvedCount, caption: 'Completed', icon: CheckCircle, classes: 'border-emerald-200 text-emerald-700 bg-emerald-50' },
-    { label: 'Rejected', value: rejectedCount, caption: 'Completed', icon: XCircle, classes: 'border-red-200 text-red-700 bg-red-50' },
-    { label: 'Returned', value: returnedCount, caption: 'Sent back', icon: RotateCcw, classes: 'border-orange-200 text-orange-700 bg-orange-50' },
+    { label: 'Total Claims', status: 'ALL', value: totalCount, caption: 'All time', icon: FileSpreadsheet, classes: 'border-blue-200 text-blue-700 bg-blue-50' },
+    { label: 'Submitted', status: 'SUBMITTED', value: submittedCount, caption: 'Awaiting review', icon: Send, classes: 'border-amber-200 text-amber-700 bg-amber-50' },
+    { label: 'Under Review', status: 'UNDER_REVIEW', value: reviewCount, caption: 'In progress', icon: Timer, classes: 'border-violet-200 text-violet-700 bg-violet-50' },
+    { label: 'Approved', status: 'APPROVED', value: approvedCount, caption: 'Completed', icon: CheckCircle, classes: 'border-emerald-200 text-emerald-700 bg-emerald-50' },
+    { label: 'Rejected', status: 'REJECTED', value: rejectedCount, caption: 'Completed', icon: XCircle, classes: 'border-red-200 text-red-700 bg-red-50' },
+    { label: 'Returned', status: 'RETURNED_FOR_CHANGES', value: returnedCount, caption: 'Sent back', icon: RotateCcw, classes: 'border-orange-200 text-orange-700 bg-orange-50' },
   ];
 
-  const recentClaims = filteredClaims.slice(0, 5);
+  const categoryOptions = useMemo(
+    () => Array.from(new Set(claims.map((claim) => claim.category))).sort(),
+    [claims],
+  );
+
+  const clearFilters = () => {
+    setSearch('');
+    setStatusFilter('ALL');
+    setCategoryFilter('ALL');
+    setDateFrom('');
+    setDateTo('');
+    setShowAllClaims(false);
+  };
+
+  const exportClaims = () => {
+    const headers = ['Claim ID', 'Title', 'Applicant', 'Category', 'Amount', 'Status', 'Submitted On'];
+    const rows = filteredClaims.map((claim) => [
+      `CLM-${claim.id.slice(0, 8)}`,
+      claim.title,
+      claim.applicant?.name || 'Unknown',
+      claim.category,
+      `${claim.currency || 'USD'} ${parseFloat(claim.amount as any).toFixed(2)}`,
+      claim.status,
+      new Date(claim.createdAt).toLocaleString(),
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'claimflow-review-claims.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const recentClaims = showAllClaims ? filteredClaims : filteredClaims.slice(0, 5);
   const percentage = (count: number) => (totalCount ? Math.round((count / totalCount) * 100) : 0);
 
   return (
@@ -136,7 +188,17 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <section key={card.label} className={`flex min-h-[150px] rounded-[8px] border bg-white p-5 shadow-sm ${card.classes}`}>
+            <button
+              key={card.label}
+              type="button"
+              onClick={() => {
+                setStatusFilter(card.status);
+                setShowAllClaims(false);
+              }}
+              className={`flex min-h-[150px] rounded-[8px] border bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${card.classes} ${
+                statusFilter === card.status ? 'ring-2 ring-blue-500' : ''
+              }`}
+            >
               <div className="flex w-full flex-col justify-between gap-5">
                 <div className="flex items-center gap-2">
                   <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${card.classes}`}>
@@ -149,7 +211,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
                   <p className="small-text text-[#33476b]">{card.caption}</p>
                 </div>
               </div>
-            </section>
+            </button>
           );
         })}
       </div>
@@ -165,22 +227,40 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
               className="helper-text h-11 w-full rounded-[8px] border border-slate-200 bg-white pl-10 pr-3 outline-none focus:border-blue-500"
             />
           </div>
-          <button className="button-text flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3">
-            All Statuses <ChevronDown size={16} />
-          </button>
-          <button className="button-text flex h-11 items-center justify-between rounded-[8px] border border-slate-200 px-3">
-            All Categories <ChevronDown size={16} />
-          </button>
-          <button className="button-text flex h-11 items-center gap-2 rounded-[8px] border border-slate-200 px-3 text-left">
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              className="button-text h-11 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-3 pr-8 outline-none focus:border-blue-500"
+            >
+              <option value="ALL">All Statuses</option>
+              {statCards.filter((card) => card.status !== 'ALL').map((card) => (
+                <option key={card.status} value={card.status}>{card.label}</option>
+              ))}
+            </select>
+            <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+          </div>
+          <div className="relative">
+            <select
+              value={categoryFilter}
+              onChange={(event) => setCategoryFilter(event.target.value)}
+              className="button-text h-11 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-3 pr-8 outline-none focus:border-blue-500"
+            >
+              <option value="ALL">All Categories</option>
+              {categoryOptions.map((category) => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+            <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
+          </div>
+          <div className="button-text flex h-11 items-center gap-2 rounded-[8px] border border-slate-200 px-3 text-left">
             <CalendarDays size={17} />
-            <span className="min-w-0 leading-tight">
-              <span className="helper-text block text-[#33476b]">Date Range</span>
-              <span className="block whitespace-nowrap">01 May 2024 - 12 May 2024</span>
-            </span>
-            <ChevronDown size={16} className="ml-auto" />
-          </button>
-          <button className="button-text h-11 rounded-[8px] border border-slate-200 px-3 text-[#33476b]">Clear Filters</button>
-          <button className="button-text flex h-11 items-center justify-center gap-2 rounded-[8px] bg-blue-600 px-3 text-white">
+            <input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className="min-w-0 bg-transparent outline-none" />
+            <span>-</span>
+            <input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className="min-w-0 bg-transparent outline-none" />
+          </div>
+          <button onClick={clearFilters} className="button-text h-11 rounded-[8px] border border-slate-200 px-3 text-[#33476b] hover:bg-slate-50">Clear Filters</button>
+          <button onClick={exportClaims} className="button-text flex h-11 items-center justify-center gap-2 rounded-[8px] bg-blue-600 px-3 text-white hover:bg-blue-700">
             <Download size={17} />
             Export
           </button>
@@ -190,8 +270,8 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
       <section className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between px-5 py-4">
           <h2 className="section-title text-[#07152f]">Recent Claims</h2>
-          <button className="button-text flex items-center gap-2 text-blue-600">
-            View all claims <ArrowRight size={18} />
+          <button onClick={() => setShowAllClaims((value) => !value)} className="button-text flex items-center gap-2 text-blue-600 hover:text-blue-700">
+            {showAllClaims ? 'Show recent' : 'View all claims'} <ArrowRight size={18} />
           </button>
         </div>
         {loading ? (

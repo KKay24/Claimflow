@@ -59,6 +59,11 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
   const [claims, setClaims] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [claimFilter, setClaimFilter] = useState('ALL');
+  const [actionFilter, setActionFilter] = useState('ALL');
+  const [userFilter, setUserFilter] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -80,24 +85,97 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
     load();
   }, [user?.role]);
 
-  const rows = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return claims
-      .flatMap((claim) =>
+  const allRows = useMemo(
+    () =>
+      claims.flatMap((claim) =>
         (claim.auditLogs || []).map((log) => ({
           claim,
           log,
         })),
-      )
-      .filter(({ claim }) => !q || claim.title.toLowerCase().includes(q) || claim.id.toLowerCase().includes(q))
+      ),
+    [claims],
+  );
+
+  const claimOptions = useMemo(
+    () => claims.map((claim) => ({ id: claim.id, title: claim.title })),
+    [claims],
+  );
+
+  const actionOptions = useMemo(
+    () => Array.from(new Set(allRows.map(({ log }) => log.newStatus))).sort(),
+    [allRows],
+  );
+
+  const userOptions = useMemo(
+    () => Array.from(new Set(allRows.map(({ log }) => log.user?.name || 'System'))).sort(),
+    [allRows],
+  );
+
+  const rows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const fromTime = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
+    const toTime = dateTo ? new Date(`${dateTo}T23:59:59`).getTime() : null;
+
+    return allRows
+      .filter(({ claim, log }) => {
+        const logTime = new Date(log.createdAt).getTime();
+        const actorName = log.user?.name || 'System';
+        const matchesSearch =
+          !q ||
+          [claim.title, claim.id, log.comment, actorName, log.oldStatus, log.newStatus]
+            .filter(Boolean)
+            .some((value) => value!.toLowerCase().includes(q));
+
+        return (
+          matchesSearch &&
+          (claimFilter === 'ALL' || claim.id === claimFilter) &&
+          (actionFilter === 'ALL' || log.newStatus === actionFilter) &&
+          (userFilter === 'ALL' || actorName === userFilter) &&
+          (!fromTime || logTime >= fromTime) &&
+          (!toTime || logTime <= toTime)
+        );
+      })
       .sort((a, b) => new Date(b.log.createdAt).getTime() - new Date(a.log.createdAt).getTime());
-  }, [claims, search]);
+  }, [actionFilter, allRows, claimFilter, dateFrom, dateTo, search, userFilter]);
+
+  const clearFilters = () => {
+    setSearch('');
+    setClaimFilter('ALL');
+    setActionFilter('ALL');
+    setUserFilter('ALL');
+    setDateFrom('');
+    setDateTo('');
+  };
+
+  const exportRows = () => {
+    const headers = ['Date & Time', 'Claim', 'Action', 'Old Status', 'New Status', 'User', 'Role', 'Comment'];
+    const csvRows = rows.map(({ claim, log }) => [
+      new Date(log.createdAt).toLocaleString(),
+      claim.title,
+      'Status Changed',
+      log.oldStatus || 'NEW',
+      log.newStatus,
+      log.user?.name || 'System',
+      log.user?.role || user?.role || '',
+      log.comment || '-',
+    ]);
+    const csv = [headers, ...csvRows]
+      .map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'claimflow-audit-history.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div>
       <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
         <div className="overflow-x-auto">
-          <div className="grid min-w-[1120px] grid-cols-[280px_178px_190px_174px_226px_128px] gap-4">
+          <div className="grid min-w-[1120px] grid-cols-[280px_178px_190px_174px_260px_128px] gap-4">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#33476b]" size={22} />
               <input
@@ -107,18 +185,40 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
                 className="small-text h-12 w-full rounded-[8px] border border-slate-200 pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
-            {['All Claims', 'All Actions', 'All Users'].map((label) => (
-              <button key={label} className="button-text flex h-12 items-center justify-between rounded-[8px] border border-slate-200 px-4">
-                {label}
-                <ChevronDown size={18} />
-              </button>
-            ))}
-            <button className="button-text flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4">
+            <div className="relative">
+              <select value={claimFilter} onChange={(event) => setClaimFilter(event.target.value)} className="button-text h-12 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-4 pr-10 outline-none focus:border-blue-500">
+                <option value="ALL">All Claims</option>
+                {claimOptions.map((claim) => (
+                  <option key={claim.id} value={claim.id}>{claim.title}</option>
+                ))}
+              </select>
+              <ChevronDown size={18} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+            </div>
+            <div className="relative">
+              <select value={actionFilter} onChange={(event) => setActionFilter(event.target.value)} className="button-text h-12 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-4 pr-10 outline-none focus:border-blue-500">
+                <option value="ALL">All Actions</option>
+                {actionOptions.map((action) => (
+                  <option key={action} value={action}>{action.replaceAll('_', ' ')}</option>
+                ))}
+              </select>
+              <ChevronDown size={18} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+            </div>
+            <div className="relative">
+              <select value={userFilter} onChange={(event) => setUserFilter(event.target.value)} className="button-text h-12 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-4 pr-10 outline-none focus:border-blue-500">
+                <option value="ALL">All Users</option>
+                {userOptions.map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+              <ChevronDown size={18} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+            </div>
+            <div className="button-text flex h-12 items-center gap-3 rounded-[8px] border border-slate-200 px-4">
               <CalendarDays size={20} />
-              01 May 2024 - 12 May 2024
-              <ChevronDown size={18} className="ml-auto" />
-            </button>
-            <button className="button-text h-12 rounded-[8px] border border-slate-200 px-4 text-[#33476b]">Clear Filters</button>
+              <input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className="min-w-0 bg-transparent outline-none" />
+              <span>-</span>
+              <input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className="min-w-0 bg-transparent outline-none" />
+            </div>
+            <button onClick={clearFilters} className="button-text h-12 rounded-[8px] border border-slate-200 px-4 text-[#33476b] hover:bg-slate-50">Clear Filters</button>
           </div>
         </div>
 
@@ -127,7 +227,7 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
             <Info size={22} className="text-blue-600" />
             <span>{rows.length} audit records found</span>
           </div>
-          <button className="button-text flex h-11 items-center gap-3 rounded-[8px] border border-blue-300 px-5 text-blue-600">
+          <button onClick={exportRows} className="button-text flex h-11 items-center gap-3 rounded-[8px] border border-blue-300 px-5 text-blue-600 hover:bg-blue-100">
             <Download size={19} />
             Export
           </button>
@@ -154,10 +254,28 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ onViewClaim }) => {
                   </td>
                 </tr>
               ) : rows.map(({ claim, log }) => (
-                <tr key={log.id} className="body-text text-[#10244a]">
+                <tr
+                  key={log.id}
+                  onClick={() => onViewClaim(claim.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onViewClaim(claim.id);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  className="body-text cursor-pointer text-[#10244a] transition hover:bg-blue-50 focus:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                >
                   <td className="px-5 py-4">{new Date(log.createdAt).toLocaleString()}</td>
                   <td className="px-5 py-4">
-                    <button onClick={() => onViewClaim(claim.id)} className="flex items-center gap-3 text-left">
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onViewClaim(claim.id);
+                      }}
+                      className="flex items-center gap-3 text-left hover:text-blue-600"
+                    >
                       <span className="flex h-10 w-10 items-center justify-center rounded-[8px] bg-blue-50 text-blue-600">
                         <Plane size={22} />
                       </span>

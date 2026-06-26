@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import api from '../utils/api';
 import {
   Plus,
@@ -48,6 +48,11 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
   const [claims, setClaims] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [categoryFilter, setCategoryFilter] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
   // New Claim Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -128,41 +133,83 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
   const statCards = [
     {
       label: 'Draft',
+      status: 'DRAFT',
       count: draftCount,
       icon: FileText,
       className: 'border-blue-200 text-blue-700 bg-blue-50',
     },
     {
       label: 'Submitted',
+      status: 'SUBMITTED',
       count: claims.filter((c) => c.status === 'SUBMITTED').length,
       icon: Send,
       className: 'border-amber-200 text-amber-700 bg-amber-50',
     },
     {
       label: 'Under Review',
+      status: 'UNDER_REVIEW',
       count: claims.filter((c) => c.status === 'UNDER_REVIEW').length,
       icon: Clock,
       className: 'border-violet-200 text-violet-700 bg-violet-50',
     },
     {
       label: 'Approved',
+      status: 'APPROVED',
       count: claims.filter((c) => c.status === 'APPROVED').length,
       icon: CheckCircle,
       className: 'border-emerald-200 text-emerald-700 bg-emerald-50',
     },
     {
       label: 'Rejected',
+      status: 'REJECTED',
       count: claims.filter((c) => c.status === 'REJECTED').length,
       icon: XCircle,
       className: 'border-red-200 text-red-700 bg-red-50',
     },
     {
       label: 'Returned',
+      status: 'RETURNED_FOR_CHANGES',
       count: claims.filter((c) => c.status === 'RETURNED_FOR_CHANGES').length,
       icon: RotateCcw,
       className: 'border-orange-200 text-orange-700 bg-orange-50',
     },
   ];
+
+  const categoryOptions = useMemo(
+    () => Array.from(new Set(claims.map((claim) => claim.category))).sort(),
+    [claims],
+  );
+
+  const filteredClaims = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const fromTime = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
+    const toTime = dateTo ? new Date(`${dateTo}T23:59:59`).getTime() : null;
+
+    return claims.filter((claim) => {
+      const updatedTime = new Date(claim.updatedAt).getTime();
+      const matchesSearch =
+        !query ||
+        [claim.title, claim.description, claim.category, claim.status]
+          .filter(Boolean)
+          .some((value) => value!.toLowerCase().includes(query));
+
+      return (
+        matchesSearch &&
+        (statusFilter === 'ALL' || claim.status === statusFilter) &&
+        (categoryFilter === 'ALL' || claim.category === categoryFilter) &&
+        (!fromTime || updatedTime >= fromTime) &&
+        (!toTime || updatedTime <= toTime)
+      );
+    });
+  }, [categoryFilter, claims, dateFrom, dateTo, search, statusFilter]);
+
+  const clearFilters = () => {
+    setSearch('');
+    setStatusFilter('ALL');
+    setCategoryFilter('ALL');
+    setDateFrom('');
+    setDateTo('');
+  };
 
   const getStatusBadge = (status: string) => {
     const base = "status-badge rounded-full px-2.5 py-0.5 uppercase ";
@@ -200,7 +247,14 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className={`flex min-h-[140px] flex-col justify-between rounded-[8px] border bg-white p-5 shadow-sm ${card.className}`}>
+            <button
+              key={card.label}
+              type="button"
+              onClick={() => setStatusFilter((current) => (current === card.status ? 'ALL' : card.status))}
+              className={`flex min-h-[140px] flex-col justify-between rounded-[8px] border bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${card.className} ${
+                statusFilter === card.status ? 'ring-2 ring-blue-500' : ''
+              }`}
+            >
               <div className="flex items-start gap-2">
                 <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] ${card.className}`}>
                   <Icon size={13} strokeWidth={2.4} />
@@ -210,24 +264,57 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                 </div>
               </div>
               <h3 className="page-title text-[#07152f]">{card.count}</h3>
-            </div>
+            </button>
           );
         })}
       </div>
 
-      <div className="grid gap-5 border-t border-slate-200 pt-7 lg:grid-cols-[1.5fr_1.2fr_1.2fr_1.3fr]">
+      <div className="grid gap-4 border-t border-slate-200 pt-7 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr_auto]">
         <div className="relative">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-[#33476b]" size={24} />
-          <input placeholder="Search by title or description..." className="body-text h-14 w-full rounded-[8px] border border-slate-200 bg-white pl-14 pr-4 outline-none" />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by title or description..."
+            className="body-text h-14 w-full rounded-[8px] border border-slate-200 bg-white pl-14 pr-4 outline-none focus:border-blue-500"
+          />
         </div>
-        <button className="button-text flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5">
-          All Statuses <ChevronDown size={20} />
-        </button>
-        <button className="button-text flex h-14 items-center justify-between rounded-[8px] border border-slate-200 bg-white px-5">
-          All Categories <ChevronDown size={20} />
-        </button>
-        <button className="button-text flex h-14 items-center gap-4 rounded-[8px] border border-slate-200 bg-white px-5 text-[#33476b]">
-          <CalendarDays size={22} /> Select Date Range
+        <div className="relative">
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="button-text h-14 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-5 pr-10 outline-none focus:border-blue-500"
+          >
+            <option value="ALL">All Statuses</option>
+            {statCards.map((card) => (
+              <option key={card.status} value={card.status}>{card.label}</option>
+            ))}
+          </select>
+          <ChevronDown size={20} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+        </div>
+        <div className="relative">
+          <select
+            value={categoryFilter}
+            onChange={(event) => setCategoryFilter(event.target.value)}
+            className="button-text h-14 w-full appearance-none rounded-[8px] border border-slate-200 bg-white px-5 pr-10 outline-none focus:border-blue-500"
+          >
+            <option value="ALL">All Categories</option>
+            {categoryOptions.map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+          <ChevronDown size={20} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2" />
+        </div>
+        <label className="button-text flex h-14 items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 text-[#33476b]">
+          <CalendarDays size={20} />
+          <input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className="min-w-0 bg-transparent outline-none" />
+        </label>
+        <label className="button-text flex h-14 items-center gap-3 rounded-[8px] border border-slate-200 bg-white px-4 text-[#33476b]">
+          <CalendarDays size={20} />
+          <input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className="min-w-0 bg-transparent outline-none" />
+        </label>
+        <button onClick={clearFilters} className="button-text h-14 rounded-[8px] border border-slate-200 bg-white px-5 text-[#33476b] hover:bg-slate-50">
+          Clear
         </button>
       </div>
 
@@ -249,8 +336,20 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                 <tr><td colSpan={6} className="py-20 text-center"><Loader2 className="mx-auto animate-spin text-blue-600" size={32} /></td></tr>
               ) : error ? (
                 <tr><td colSpan={6} className="py-12 text-center text-red-600">{error}</td></tr>
-              ) : claims.map((claim) => (
-                <tr key={claim.id} className="body-text text-[#10244a] hover:bg-slate-50">
+              ) : filteredClaims.map((claim) => (
+                <tr
+                  key={claim.id}
+                  onClick={() => onViewClaim(claim.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onViewClaim(claim.id);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  className="body-text cursor-pointer text-[#10244a] transition hover:bg-blue-50 focus:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                >
                   <td className="py-4 px-4">
                     <div className="truncate text-[#07152f]">{claim.title}</div>
                     {claim.description && <p className="helper-text mt-1 truncate text-[#33476b]">{claim.description}</p>}
@@ -263,7 +362,13 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                     <span className="text-[#33476b]">{new Date(claim.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </td>
                   <td className="py-4 px-3 text-right">
-                    <button onClick={() => onViewClaim(claim.id)} className="button-text rounded-[8px] border border-blue-200 px-3 py-2 text-blue-600">
+                    <button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onViewClaim(claim.id);
+                      }}
+                      className="button-text rounded-[8px] border border-blue-200 px-3 py-2 text-blue-600 hover:bg-blue-50"
+                    >
                       View
                     </button>
                   </td>
@@ -273,7 +378,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
           </table>
         </div>
         <div className="small-text flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[#33476b]">
-          <span>Showing 1 to {claims.length} of {claims.length} results</span>
+          <span>Showing 1 to {filteredClaims.length} of {claims.length} results</span>
           <span className="rounded-[8px] bg-blue-600 px-4 py-3 font-bold text-white">1</span>
         </div>
       </div>
