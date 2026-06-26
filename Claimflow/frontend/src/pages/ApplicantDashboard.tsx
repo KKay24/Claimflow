@@ -246,24 +246,39 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5">
         {statCards.map((card) => {
           const Icon = card.icon;
+          const isSelected = statusFilter === card.status;
           return (
             <button
               key={card.label}
               type="button"
               onClick={() => setStatusFilter((current) => (current === card.status ? 'ALL' : card.status))}
-              className={`flex min-h-[140px] flex-col justify-between rounded-[8px] border bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${card.className} ${
-                statusFilter === card.status ? 'ring-2 ring-blue-500' : ''
+              aria-pressed={isSelected}
+              title={`Filter by ${card.label}`}
+              className={`group flex min-h-[140px] cursor-pointer flex-col justify-between rounded-[8px] border bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1.5 hover:border-blue-500 hover:bg-white hover:shadow-xl hover:shadow-blue-950/10 active:translate-y-0 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-500 ${card.className} ${
+                isSelected ? 'border-blue-500 ring-2 ring-blue-500 shadow-lg shadow-blue-950/10' : ''
               }`}
             >
-              <div className="flex items-start gap-2">
-                <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] ${card.className}`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2">
+                <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] transition-transform group-hover:scale-110 ${card.className}`}>
                   <Icon size={13} strokeWidth={2.4} />
                 </span>
                 <div className="min-w-0">
                   <span className="card-title whitespace-nowrap">{card.label}</span>
                 </div>
+                </div>
+                {isSelected && (
+                  <span className="helper-text rounded-full bg-blue-600 px-2 py-1 text-white">
+                    Selected
+                  </span>
+                )}
               </div>
-              <h3 className="page-title text-[#07152f]">{card.count}</h3>
+              <div>
+                <h3 className="page-title text-[#07152f]">{card.count}</h3>
+                <p className="helper-text mt-1 text-[#33476b] opacity-0 transition-opacity group-hover:opacity-100">
+                  Click to filter
+                </p>
+              </div>
             </button>
           );
         })}

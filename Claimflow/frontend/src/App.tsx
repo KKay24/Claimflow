@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import ApplicantDashboard from './pages/ApplicantDashboard';
 import ClaimDetail from './pages/ClaimDetail';
 import ReviewerDashboard from './pages/ReviewerDashboard';
+import ReviewerClaimsPage from './pages/ReviewerClaimsPage';
 import ClaimFormPage from './pages/ClaimFormPage';
 import AuditHistory from './pages/AuditHistory';
 import { Headphones, LogOut } from 'lucide-react';
@@ -18,7 +19,7 @@ function ClaimFlowApp() {
 
   const navigate = (view: AppView) => {
     setSelectedClaimId(null);
-    setActiveView(view === 'dashboard' ? 'claims' : view);
+    setActiveView(view);
   };
 
   if (isLoading) {
@@ -82,8 +83,10 @@ function ClaimFlowApp() {
             </section>
           </div>
         </div>
-      ) : user?.role === 'REVIEWER' ? (
+      ) : user?.role === 'REVIEWER' && activeView === 'dashboard' ? (
         <ReviewerDashboard onViewClaim={setSelectedClaimId} />
+      ) : user?.role === 'REVIEWER' ? (
+        <ReviewerClaimsPage onViewClaim={setSelectedClaimId} />
       ) : (
         <ApplicantDashboard onViewClaim={setSelectedClaimId} onCreate={() => setActiveView('create')} />
       )}

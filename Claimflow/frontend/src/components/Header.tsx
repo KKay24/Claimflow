@@ -48,10 +48,10 @@ const Header: React.FC<AppShellProps> = ({ activeView, onNavigate, hidePageCopy 
           : 'View and track all your expense reimbursement claims.',
     },
     claims: {
-      title: user.role === 'REVIEWER' ? 'Reviewer Dashboard' : 'My Claims',
+      title: user.role === 'REVIEWER' ? 'Review Claims' : 'My Claims',
       subtitle:
         user.role === 'REVIEWER'
-          ? 'Overview of expense claims that require your attention.'
+          ? 'View and review expense reimbursement claims submitted by employees.'
           : 'View and track all your expense reimbursement claims.',
     },
     create: {
