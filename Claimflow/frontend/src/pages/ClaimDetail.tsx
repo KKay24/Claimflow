@@ -6,6 +6,7 @@ import {
   Calendar,
   DollarSign,
   FileText,
+  Fuel,
   Clock,
   Download,
   AlertTriangle,
@@ -15,10 +16,13 @@ import {
   Paperclip,
   Copy,
   Info,
-  Tag,
   CheckCircle2,
   Flag,
+  Monitor,
+  MoreHorizontal,
   Plane,
+  Utensils,
+  Wifi,
 } from 'lucide-react';
 
 interface Attachment {
@@ -68,6 +72,18 @@ interface ClaimDetailProps {
 }
 
 const currencyOptions = ['USD', 'AUD', 'GBP', 'EUR', 'CAD', 'ZMW', 'ZAR', 'JPY'];
+
+const categoryIcons = {
+  TRAVEL: Plane,
+  FUEL: Fuel,
+  INTERNET: Wifi,
+  MEALS: Utensils,
+  EQUIPMENT: Monitor,
+  OTHER: MoreHorizontal,
+};
+
+const getCategoryIcon = (category: string) =>
+  categoryIcons[category as keyof typeof categoryIcons] || MoreHorizontal;
 
 const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
   const { user } = useAuth();
@@ -216,14 +232,6 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const formatShortDateTime = (date: string) =>
     new Date(date).toLocaleString(undefined, {
       day: '2-digit',
@@ -276,6 +284,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     );
   }
 
+  const CategoryIcon = getCategoryIcon(claim.category);
+
   if (user?.role === 'APPLICANT') {
     const progressSteps = [
       { status: 'DRAFT', label: 'Draft', icon: CheckCircle2, date: claim.createdAt },
@@ -298,7 +308,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <span className="flex h-20 w-20 items-center justify-center rounded-[8px] bg-violet-100 text-violet-700">
-                <Plane size={42} />
+                <CategoryIcon size={42} />
               </span>
               <div>
                 <h2 className="section-title text-[#07152f]">{claim.title}</h2>
@@ -333,7 +343,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 </div>
                 <div className="flex gap-4">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                    <Tag size={18} />
+                    <CategoryIcon size={18} />
                   </span>
                   <div>
                     <h3 className="card-title text-[#07152f]">Category</h3>
@@ -370,8 +380,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     {claim.attachment ? (
                       <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
                         <div className="min-w-0">
-                          <div className="body-text truncate text-[#07152f]">{claim.attachment.fileName}</div>
-                          <div className="helper-text text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
+                          <div className="body-text truncate text-[#07152f]">empty</div>
                         </div>
                         <a
                           href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
@@ -594,7 +603,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <span className="flex h-20 w-20 items-center justify-center rounded-[8px] bg-violet-100 text-violet-700">
-                <Plane size={42} />
+                <CategoryIcon size={42} />
               </span>
               <div>
                 <h2 className="section-title text-[#07152f]">{claim.title}</h2>
@@ -634,7 +643,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 </div>
                 <div className="flex gap-4">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                    <Tag size={18} />
+                    <CategoryIcon size={18} />
                   </span>
                   <div>
                     <h3 className="card-title text-[#07152f]">Category</h3>
@@ -671,8 +680,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     {claim.attachment ? (
                       <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
                         <div className="min-w-0">
-                          <div className="body-text truncate text-[#07152f]">{claim.attachment.fileName}</div>
-                          <div className="helper-text text-[#33476b]">{formatFileSize(claim.attachment.fileSize)}</div>
+                          <div className="body-text truncate text-[#07152f]">empty</div>
                         </div>
                         <a
                           href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
@@ -896,7 +904,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm">
             <div className="flex items-start justify-between gap-4 mb-6">
               <div>
-                <span className="text-xs uppercase tracking-wider font-extrabold text-slate-400">
+                <span className="flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-slate-400">
+                  <CategoryIcon size={16} />
                   {claim.category}
                 </span>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
@@ -975,11 +984,8 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate max-w-xs">
-                      {claim.attachment.fileName}
+                      empty
                     </h4>
-                    <p className="text-xs text-slate-400">
-                      {formatFileSize(claim.attachment.fileSize)} • {claim.attachment.mimeType}
-                    </p>
                   </div>
                 </div>
 

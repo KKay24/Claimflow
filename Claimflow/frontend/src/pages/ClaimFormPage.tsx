@@ -180,8 +180,7 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
               <div className="flex min-w-0 flex-1 items-center gap-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
                 <FileText className="text-red-600" size={34} />
                 <div className="min-w-0">
-                  <div className="card-title truncate">{file.name}</div>
-                  <div className="helper-text text-[#33476b]">{Math.ceil(file.size / 1024)} KB</div>
+                  <div className="card-title truncate">empty</div>
                 </div>
                 <X className="ml-auto text-[#07152f]" size={24} onClick={(event) => { event.preventDefault(); setFile(null); }} />
               </div>
