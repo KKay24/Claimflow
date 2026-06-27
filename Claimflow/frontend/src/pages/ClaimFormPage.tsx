@@ -41,8 +41,21 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
   const [currency, setCurrency] = useState('USD');
   const [expenseDate, setExpenseDate] = useState(today());
   const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    setFile(selectedFile);
+    setFileName(selectedFile?.name || '');
+  };
+
+  const clearFile = (event: React.MouseEvent<SVGSVGElement>) => {
+    event.preventDefault();
+    setFile(null);
+    setFileName('');
+  };
 
   const saveClaim = async (submitAfterCreate: boolean) => {
     if (!title.trim() || !category || !amount || !currency || !expenseDate) {
@@ -61,7 +74,7 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
       formData.append('amount', amount);
       formData.append('currency', currency);
       formData.append('expenseDate', expenseDate);
-      if (file) formData.append('file', file);
+      if (file) formData.append('file', file, fileName || file.name);
 
       const response = await api.post('/applications', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -175,14 +188,14 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
         <div className="mt-7">
           <span className="body-text">Attachment <span className="text-[#33476b]">(Optional)</span></span>
           <label className="mt-3 flex min-h-[116px] w-full max-w-[920px] cursor-pointer flex-col items-center justify-between gap-5 rounded-[8px] border border-dashed border-blue-500 p-4 lg:flex-row">
-            <input className="hidden" type="file" onChange={(event) => setFile(event.target.files?.[0] || null)} />
+            <input className="hidden" type="file" onChange={handleFileChange} />
             {file && (
               <div className="flex min-w-0 flex-1 items-center gap-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
                 <FileText className="text-red-600" size={34} />
                 <div className="min-w-0">
-                  <div className="card-title truncate">{file.name}</div>
+                  <div className="card-title truncate">{fileName || file.name}</div>
                 </div>
-                <X className="ml-auto text-[#07152f]" size={24} onClick={(event) => { event.preventDefault(); setFile(null); }} />
+                <X className="ml-auto text-[#07152f]" size={24} onClick={clearFile} />
               </div>
             )}
             <div className="flex min-w-[240px] flex-1 items-center justify-center gap-4 text-center">

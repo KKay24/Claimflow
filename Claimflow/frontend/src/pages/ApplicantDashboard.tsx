@@ -61,6 +61,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState('');
   const [modalError, setModalError] = useState<string | null>(null);
   const [submittingClaim, setSubmittingClaim] = useState(false);
 
@@ -80,6 +81,12 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
   useEffect(() => {
     fetchClaims();
   }, []);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    setFile(selectedFile);
+    setFileName(selectedFile?.name || '');
+  };
 
   const handleCreateClaim = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +109,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
       formData.append('description', description);
       formData.append('amount', amount);
       if (file) {
-        formData.append('file', file);
+        formData.append('file', file, fileName || file.name);
       }
 
       await api.post('/applications', formData, {
@@ -117,6 +124,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
       setDescription('');
       setAmount('');
       setFile(null);
+      setFileName('');
       setIsModalOpen(false);
 
       // Refresh list
@@ -561,7 +569,7 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                 </label>
                 <input
                   type="file"
-                  onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+                  onChange={handleFileChange}
                   className="w-full bg-slate-950 border border-slate-800 text-slate-300 rounded-lg p-2 text-xs outline-none"
                 />
               </div>

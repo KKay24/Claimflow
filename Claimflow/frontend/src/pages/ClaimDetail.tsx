@@ -105,6 +105,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
   const [editCurrency, setEditCurrency] = useState('USD');
   const [editExpenseDate, setEditExpenseDate] = useState('');
   const [editFile, setEditFile] = useState<File | null>(null);
+  const [editFileName, setEditFileName] = useState('');
   const [editError, setEditError] = useState<string | null>(null);
   const [updatingClaim, setUpdatingClaim] = useState(false);
 
@@ -169,8 +170,15 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
     setEditCurrency(claim.currency || 'USD');
     setEditExpenseDate(claim.expenseDate || new Date().toISOString().slice(0, 10));
     setEditFile(null);
+    setEditFileName('');
     setEditError(null);
     setIsEditModalOpen(true);
+  };
+
+  const handleEditFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    setEditFile(selectedFile);
+    setEditFileName(selectedFile?.name || '');
   };
 
   const handleUpdateClaim = async (e: React.FormEvent) => {
@@ -196,7 +204,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
       formData.append('currency', editCurrency);
       formData.append('expenseDate', editExpenseDate);
       if (editFile) {
-        formData.append('file', editFile);
+        formData.append('file', editFile, editFileName || editFile.name);
       }
 
       await api.patch(`/applications/${claimId}`, formData, {
@@ -1237,7 +1245,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 </label>
                 <input
                   type="file"
-                  onChange={(e) => setEditFile(e.target.files ? e.target.files[0] : null)}
+                  onChange={handleEditFileChange}
                   className="w-full bg-slate-950 border border-slate-800 text-slate-300 rounded-lg p-2 text-xs outline-none"
                 />
               </div>
