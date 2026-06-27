@@ -176,15 +176,17 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
           <span className="body-text">Attachment <span className="text-[#33476b]">(Optional)</span></span>
           <label className="mt-3 flex min-h-[116px] w-full max-w-[920px] cursor-pointer flex-col items-center justify-between gap-5 rounded-[8px] border border-dashed border-blue-500 p-4 lg:flex-row">
             <input className="hidden" type="file" onChange={(event) => setFile(event.target.files?.[0] || null)} />
-            <div className="flex min-w-0 flex-1 items-center gap-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
-              <FileText className="text-red-600" size={34} />
-              <div className="min-w-0">
-                <div className="card-title truncate">{file?.name || 'receipt.pdf'}</div>
-                <div className="helper-text text-[#33476b]">{file ? `${Math.ceil(file.size / 1024)} KB` : '123 KB'}</div>
+            {file && (
+              <div className="flex min-w-0 flex-1 items-center gap-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
+                <FileText className="text-red-600" size={34} />
+                <div className="min-w-0">
+                  <div className="card-title truncate">{file.name}</div>
+                  <div className="helper-text text-[#33476b]">{Math.ceil(file.size / 1024)} KB</div>
+                </div>
+                <X className="ml-auto text-[#07152f]" size={24} onClick={(event) => { event.preventDefault(); setFile(null); }} />
               </div>
-              <X className="ml-auto text-[#07152f]" size={24} onClick={(event) => { event.preventDefault(); setFile(null); }} />
-            </div>
-            <div className="flex min-w-[240px] items-center justify-center gap-4 text-center">
+            )}
+            <div className="flex min-w-[240px] flex-1 items-center justify-center gap-4 text-center">
               <UploadCloud size={38} className="text-blue-600" />
               <div>
                 <div className="button-text text-blue-600">Click to upload</div>
