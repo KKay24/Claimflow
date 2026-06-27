@@ -8,7 +8,7 @@ Claimflow is a full-stack claims workflow application for submitting, reviewing,
 Claimflow/
   backend/      NestJS API, PostgreSQL persistence, JWT auth, workflow rules
   frontend/     React + Vite user interface
-  docker-compose.yml
+  docker-compose.yml full local Docker stack
 ```
 
 ## Core Features
@@ -38,21 +38,65 @@ stateDiagram-v2
 
 - Frontend: React, Vite, TypeScript, React Query, Axios, Tailwind CSS
 - Backend: NestJS, TypeScript, TypeORM, Passport JWT, bcrypt
-- Local database: SQLite through TypeORM
+- Local development: Docker Compose for frontend, backend, and PostgreSQL
+- Local fallback database: SQLite through TypeORM
 - Deployment database: PostgreSQL through TypeORM
-- Local infrastructure: Docker Compose for PostgreSQL
 
 ## Local Setup
 
-### Local Database
+### Docker Setup
 
-Local development can run without Docker or PostgreSQL by using SQLite.
+The recommended local setup runs the whole application with Docker Compose.
 
-Create `Claimflow/backend/.env` from `Claimflow/backend/.env.example`, then use:
+Prerequisites:
+
+- Docker Desktop
+- Windows Subsystem for Linux 2, if running on Windows
+
+On Windows, if Docker Desktop says the engine cannot start, open PowerShell as Administrator and run:
+
+```powershell
+wsl --install
+```
+
+Restart Windows if prompted, then start Docker Desktop.
+
+From the repository root, run:
+
+```powershell
+cd Claimflow
+docker compose up -d --build
+```
+
+The app will be available at:
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3000`
+- PostgreSQL: `localhost:5432`
+
+Stop the stack with:
+
+```powershell
+docker compose down
+```
+
+To reset the local PostgreSQL data as well:
+
+```powershell
+docker compose down -v
+```
+
+### Manual Local Setup
+
+You can also run the app without Docker by installing dependencies locally.
+
+For SQLite, create `Claimflow/backend/.env` and use:
 
 ```text
 DB_TYPE=sqlite
 DB_DATABASE=claimflow.sqlite
+JWT_SECRET=super-secret-key-change-in-production
+PORT=3000
 ```
 
 TypeORM creates the SQLite database file automatically when the backend starts.

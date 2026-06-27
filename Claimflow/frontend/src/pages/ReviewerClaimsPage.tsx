@@ -200,11 +200,6 @@ const ReviewerClaimsPage: React.FC<ReviewerClaimsPageProps> = ({ onViewClaim }) 
                     </span>
                     <h3 className="card-title min-w-0 whitespace-nowrap">{card.label}</h3>
                   </div>
-                  {isSelected && (
-                    <span className="helper-text rounded-full bg-blue-600 px-2 py-1 text-white">
-                      Selected
-                    </span>
-                  )}
                 </div>
                 <div>
                   <div className="flex items-baseline gap-3">

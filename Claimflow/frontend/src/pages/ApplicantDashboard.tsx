@@ -267,11 +267,6 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
                   <span className="card-title whitespace-nowrap">{card.label}</span>
                 </div>
                 </div>
-                {isSelected && (
-                  <span className="helper-text rounded-full bg-blue-600 px-2 py-1 text-white">
-                    Selected
-                  </span>
-                )}
               </div>
               <div>
                 <h3 className="page-title text-[#07152f]">{card.count}</h3>
