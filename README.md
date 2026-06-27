@@ -101,6 +101,12 @@ The frontend uses `VITE_API_URL` when provided, otherwise it calls `http://local
 - `POST /reviewer/applications/:id/reject`
 - `POST /reviewer/applications/:id/return`
 
+## Testing Strategy
+
+- Unit tests cover workflow transition rules.
+- E2E tests cover API behavior, authentication, authorization, and audit logging.
+- Invalid transitions are tested to ensure illegal workflow changes are blocked.
+
 ## Documentation
 
 - [Software Design Document](SOFTWARE_DESIGN_DOCUMENT.md)
