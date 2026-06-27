@@ -380,7 +380,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     {claim.attachment ? (
                       <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
                         <div className="min-w-0">
-                          <div className="body-text truncate text-[#07152f]">empty</div>
+                          <div className="body-text truncate text-[#07152f]">{claim.attachment.fileName}</div>
                         </div>
                         <a
                           href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
@@ -680,7 +680,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                     {claim.attachment ? (
                       <div className="mt-3 flex items-center justify-between rounded-[8px] border border-slate-200 px-4 py-3">
                         <div className="min-w-0">
-                          <div className="body-text truncate text-[#07152f]">empty</div>
+                          <div className="body-text truncate text-[#07152f]">{claim.attachment.fileName}</div>
                         </div>
                         <a
                           href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${claim.attachment.fileUrl}`}
@@ -984,7 +984,7 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate max-w-xs">
-                      empty
+                      {claim.attachment.fileName}
                     </h4>
                   </div>
                 </div>
