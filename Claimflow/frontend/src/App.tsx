@@ -45,6 +45,7 @@ function ClaimFlowApp() {
         <ClaimDetail
           claimId={selectedClaimId}
           onBack={() => setSelectedClaimId(null)}
+          onViewFullAuditHistory={() => navigate('audit')}
         />
       ) : activeView === 'create' && user?.role === 'APPLICANT' ? (
         <ClaimFormPage onCancel={() => setActiveView('claims')} onSaved={() => setActiveView('claims')} />
@@ -89,7 +90,7 @@ function ClaimFlowApp() {
           </div>
         </div>
       ) : user?.role === 'REVIEWER' && activeView === 'dashboard' ? (
-        <ReviewerDashboard onViewClaim={setSelectedClaimId} />
+        <ReviewerDashboard onViewClaim={setSelectedClaimId} onViewFullActivity={() => navigate('audit')} />
       ) : user?.role === 'REVIEWER' ? (
         <ReviewerClaimsPage onViewClaim={setSelectedClaimId} />
       ) : (

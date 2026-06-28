@@ -69,6 +69,7 @@ interface Application {
 interface ClaimDetailProps {
   claimId: string;
   onBack: () => void;
+  onViewFullAuditHistory: () => void;
 }
 
 const currencyOptions = ['USD', 'AUD', 'GBP', 'EUR', 'CAD', 'ZMW', 'ZAR', 'JPY'];
@@ -85,7 +86,7 @@ const categoryIcons = {
 const getCategoryIcon = (category: string) =>
   categoryIcons[category as keyof typeof categoryIcons] || MoreHorizontal;
 
-const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
+const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack, onViewFullAuditHistory }) => {
   const { user } = useAuth();
   const [claim, setClaim] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
@@ -811,7 +812,10 @@ const ClaimDetail: React.FC<ClaimDetailProps> = ({ claimId, onBack }) => {
                 </tbody>
               </table>
             </div>
-            <button className="button-text mt-4 rounded-[8px] border border-blue-200 px-5 py-3 text-blue-600">
+            <button
+              onClick={onViewFullAuditHistory}
+              className="button-text mt-4 rounded-[8px] border border-blue-200 px-5 py-3 text-blue-600 hover:bg-blue-50"
+            >
               View Full Audit History
             </button>
           </section>

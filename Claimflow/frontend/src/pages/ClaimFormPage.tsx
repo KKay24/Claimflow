@@ -102,7 +102,7 @@ const ClaimFormPage: React.FC<ClaimFormPageProps> = ({ onCancel, onSaved }) => {
           <div className="body-text text-[#33476b]">
             Claim Status: <span className="status-badge rounded-[6px] bg-blue-100 px-3 py-1 text-blue-700">DRAFT</span>
           </div>
-          <div className="body-text text-[#33476b]">Last saved: 12 May 2024, 10:30 AM</div>
+          <div className="body-text text-[#33476b]">Last saved: Not saved yet</div>
         </div>
 
         {error && <div className="small-text mb-6 rounded-[8px] border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>}

@@ -39,9 +39,19 @@ interface Application {
 
 interface ReviewerDashboardProps {
   onViewClaim: (id: string) => void;
+  onViewFullActivity: () => void;
 }
 
-const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) => {
+const toDateKey = (date: string) => {
+  const parsedDate = new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) return '';
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim, onViewFullActivity }) => {
   const [claims, setClaims] = useState<Application[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -71,11 +81,11 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
 
   const filteredClaims = useMemo(() => claims.filter((claim) => {
     const query = search.trim().toLowerCase();
-    const fromTime = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
-    const toTime = dateTo ? new Date(`${dateTo}T23:59:59`).getTime() : null;
-    const createdTime = new Date(claim.createdAt).getTime();
+    const submittedDate = toDateKey(claim.createdAt);
     const matchesSearch = !query || [
+      claim.id,
       claim.title,
+      claim.description,
       claim.category,
       claim.status,
       claim.applicant?.name,
@@ -88,8 +98,8 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
       matchesSearch &&
       (statusFilter === 'ALL' || claim.status === statusFilter) &&
       (categoryFilter === 'ALL' || claim.category === categoryFilter) &&
-      (!fromTime || createdTime >= fromTime) &&
-      (!toTime || createdTime <= toTime)
+      (!dateFrom || submittedDate >= dateFrom) &&
+      (!dateTo || submittedDate <= dateTo)
     );
   }), [categoryFilter, claims, dateFrom, dateTo, search, statusFilter]);
 
@@ -181,6 +191,60 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
 
   const recentClaims = showAllClaims ? filteredClaims : filteredClaims.slice(0, 5);
   const percentage = (count: number) => (totalCount ? Math.round((count / totalCount) * 100) : 0);
+  const statusChart = useMemo(() => {
+    const slices = [
+      { count: reviewCount, color: '#7c3aed' },
+      { count: submittedCount, color: '#f59e0b' },
+      { count: approvedCount, color: '#10b981' },
+      { count: rejectedCount, color: '#ef4444' },
+      { count: returnedCount, color: '#fb923c' },
+    ];
+    if (!totalCount) return '#e2e8f0';
+
+    let cursor = 0;
+    const stops = slices
+      .filter((slice) => slice.count > 0)
+      .map((slice) => {
+        const start = cursor;
+        cursor += (slice.count / totalCount) * 100;
+        return `${slice.color} ${start}% ${cursor}%`;
+      });
+
+    return `conic-gradient(${stops.join(', ')})`;
+  }, [approvedCount, rejectedCount, returnedCount, reviewCount, submittedCount, totalCount]);
+  const reviewActivity = useMemo(
+    () =>
+      [...claims]
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 3)
+        .map((claim) => {
+          const statusMeta = {
+            SUBMITTED: { title: 'Submitted for Review', icon: Send, classes: 'bg-amber-100 text-amber-700' },
+            UNDER_REVIEW: { title: 'Moved to Under Review', icon: Timer, classes: 'bg-violet-100 text-violet-700' },
+            APPROVED: { title: 'Approved', icon: CheckCircle, classes: 'bg-emerald-100 text-emerald-700' },
+            REJECTED: { title: 'Rejected', icon: XCircle, classes: 'bg-red-100 text-red-700' },
+            RETURNED_FOR_CHANGES: { title: 'Returned for Changes', icon: RotateCcw, classes: 'bg-orange-100 text-orange-700' },
+          }[claim.status] || {
+            title: claim.status.replaceAll('_', ' '),
+            icon: FileSpreadsheet,
+            classes: 'bg-slate-100 text-slate-700',
+          };
+
+          return {
+            ...statusMeta,
+            id: claim.id,
+            detail: `CLM-${claim.id.slice(0, 8)} - ${claim.title}`,
+            date: new Date(claim.updatedAt).toLocaleString(undefined, {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          };
+        }),
+    [claims],
+  );
 
   return (
     <div className="w-full space-y-6">
@@ -367,12 +431,8 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
             </table>
           </div>
         )}
-        <div className="small-text flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[#33476b]">
+        <div className="small-text border-t border-slate-200 px-5 py-4 text-[#33476b]">
           <span>Showing 1 to {recentClaims.length} of {filteredClaims.length} results</span>
-          <div className="flex items-center gap-3">
-            <span className="button-text rounded-[8px] bg-blue-600 px-4 py-3 text-white">1</span>
-            <span className="button-text rounded-[8px] border border-slate-200 px-4 py-3">2</span>
-          </div>
         </div>
       </section>
 
@@ -382,9 +442,7 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
           <div className="mt-6 grid gap-6 md:grid-cols-[220px_1fr] md:items-center">
             <div
               className="mx-auto flex h-40 w-40 items-center justify-center rounded-full"
-              style={{
-                background: 'conic-gradient(#7c3aed 0 21%, #f59e0b 21% 51%, #10b981 51% 86%, #ef4444 86% 95%, #fb923c 95% 100%)',
-              }}
+              style={{ background: statusChart }}
             >
               <div className="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white text-center">
                 <span className="section-title text-[#07152f]">{totalCount}</span>
@@ -414,29 +472,26 @@ const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({ onViewClaim }) =>
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="section-title text-[#07152f]">My Review Activity</h2>
-            <button className="button-text flex items-center gap-2 text-blue-600">
+            <button onClick={onViewFullActivity} className="button-text flex items-center gap-2 text-blue-600 hover:text-blue-700">
               View full activity <ArrowRight size={18} />
             </button>
           </div>
           <div className="mt-5 divide-y divide-slate-200">
-            {[
-              ['Moved to Under Review', 'CLM-2024-0052 · Flight to Nairobi', '12 May 2024, 02:15 PM', Timer, 'bg-violet-100 text-violet-700'],
-              ['Approved', 'CLM-2024-0048 · Office Chair', '09 May 2024, 04:10 PM', CheckCircle, 'bg-emerald-100 text-emerald-700'],
-              ['Returned for Changes', 'CLM-2024-0045 · Hotel Accommodation', '08 May 2024, 03:05 PM', RotateCcw, 'bg-orange-100 text-orange-700'],
-            ].map(([title, detail, date, Icon, classes]) => {
-              const ActivityIcon = Icon as typeof Timer;
+            {reviewActivity.length === 0 ? (
+              <p className="small-text py-4 text-[#33476b]">No review activity yet.</p>
+            ) : reviewActivity.map(({ id, title, detail, date, icon: ActivityIcon, classes }) => {
               return (
-                <div key={title as string} className="flex items-center justify-between gap-4 py-4">
+                <div key={id} className="flex items-center justify-between gap-4 py-4">
                   <div className="flex items-center gap-4">
                     <span className={`flex h-10 w-10 items-center justify-center rounded-full ${classes}`}>
                       <ActivityIcon size={20} />
                     </span>
                     <div>
-                      <div className="body-text text-[#07152f]">{title as string}</div>
-                      <div className="small-text text-[#33476b]">{detail as string}</div>
+                      <div className="body-text text-[#07152f]">{title}</div>
+                      <div className="small-text text-[#33476b]">{detail}</div>
                     </div>
                   </div>
-                  <span className="small-text text-[#33476b]">{date as string}</span>
+                  <span className="small-text text-[#33476b]">{date}</span>
                 </div>
               );
             })}

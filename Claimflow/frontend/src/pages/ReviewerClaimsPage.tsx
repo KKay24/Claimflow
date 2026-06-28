@@ -40,6 +40,15 @@ interface ReviewerClaimsPageProps {
   onViewClaim: (id: string) => void;
 }
 
+const toDateKey = (date: string) => {
+  const parsedDate = new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) return '';
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const ReviewerClaimsPage: React.FC<ReviewerClaimsPageProps> = ({ onViewClaim }) => {
   const [claims, setClaims] = useState<Application[]>([]);
   const [search, setSearch] = useState('');
@@ -90,11 +99,9 @@ const ReviewerClaimsPage: React.FC<ReviewerClaimsPageProps> = ({ onViewClaim }) 
 
   const filteredClaims = useMemo(() => {
     const query = search.trim().toLowerCase();
-    const fromTime = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
-    const toTime = dateTo ? new Date(`${dateTo}T23:59:59`).getTime() : null;
 
     return claims.filter((claim) => {
-      const createdTime = new Date(claim.createdAt).getTime();
+      const submittedDate = toDateKey(claim.createdAt);
       const matchesSearch =
         !query ||
         [claim.id, claim.title, claim.description, claim.category, claim.status, claim.applicant?.name, claim.applicant?.email]
@@ -105,8 +112,8 @@ const ReviewerClaimsPage: React.FC<ReviewerClaimsPageProps> = ({ onViewClaim }) 
         matchesSearch &&
         (statusFilter === 'ALL' || claim.status === statusFilter) &&
         (categoryFilter === 'ALL' || claim.category === categoryFilter) &&
-        (!fromTime || createdTime >= fromTime) &&
-        (!toTime || createdTime <= toTime)
+        (!dateFrom || submittedDate >= dateFrom) &&
+        (!dateTo || submittedDate <= dateTo)
       );
     });
   }, [categoryFilter, claims, dateFrom, dateTo, search, statusFilter]);
@@ -351,9 +358,8 @@ const ReviewerClaimsPage: React.FC<ReviewerClaimsPageProps> = ({ onViewClaim }) 
             </table>
           </div>
         )}
-        <div className="small-text flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[#33476b]">
+        <div className="small-text border-t border-slate-200 px-5 py-4 text-[#33476b]">
           <span>Showing 1 to {filteredClaims.length} of {claims.length} results</span>
-          <span className="button-text rounded-[8px] bg-blue-600 px-4 py-3 text-white">1</span>
         </div>
       </section>
     </div>

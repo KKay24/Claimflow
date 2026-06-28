@@ -44,6 +44,15 @@ interface ApplicantDashboardProps {
   onCreate: () => void;
 }
 
+const toDateKey = (date: string) => {
+  const parsedDate = new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) return '';
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, onCreate }) => {
   const [claims, setClaims] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -190,14 +199,12 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
 
   const filteredClaims = useMemo(() => {
     const query = search.trim().toLowerCase();
-    const fromTime = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
-    const toTime = dateTo ? new Date(`${dateTo}T23:59:59`).getTime() : null;
 
     return claims.filter((claim) => {
-      const updatedTime = new Date(claim.updatedAt).getTime();
+      const updatedDate = toDateKey(claim.updatedAt);
       const matchesSearch =
         !query ||
-        [claim.title, claim.description, claim.category, claim.status]
+        [claim.id, claim.title, claim.description, claim.category, claim.status]
           .filter(Boolean)
           .some((value) => value!.toLowerCase().includes(query));
 
@@ -205,8 +212,8 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
         matchesSearch &&
         (statusFilter === 'ALL' || claim.status === statusFilter) &&
         (categoryFilter === 'ALL' || claim.category === categoryFilter) &&
-        (!fromTime || updatedTime >= fromTime) &&
-        (!toTime || updatedTime <= toTime)
+        (!dateFrom || updatedDate >= dateFrom) &&
+        (!dateTo || updatedDate <= dateTo)
       );
     });
   }, [categoryFilter, claims, dateFrom, dateTo, search, statusFilter]);
@@ -395,9 +402,8 @@ const ApplicantDashboard: React.FC<ApplicantDashboardProps> = ({ onViewClaim, on
             </tbody>
           </table>
         </div>
-        <div className="small-text flex items-center justify-between border-t border-slate-200 px-5 py-4 text-[#33476b]">
+        <div className="small-text border-t border-slate-200 px-5 py-4 text-[#33476b]">
           <span>Showing 1 to {filteredClaims.length} of {claims.length} results</span>
-          <span className="rounded-[8px] bg-blue-600 px-4 py-3 font-bold text-white">1</span>
         </div>
       </div>
 
