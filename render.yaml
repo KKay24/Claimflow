@@ -12,7 +12,7 @@ services:
       - key: DB_TYPE
         value: postgres
       - key: DB_SYNCHRONIZE
-        value: true
+        value: false
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN

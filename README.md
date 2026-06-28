@@ -36,7 +36,7 @@ stateDiagram-v2
 
 ## Technology Stack
 
-- Frontend: React, Vite, TypeScript, React Query, Axios, Tailwind CSS
+- Frontend: React, Vite, TypeScript, Axios, Tailwind CSS
 - Backend: NestJS, TypeScript, TypeORM, Passport JWT, bcrypt
 - Local development: Docker Compose for frontend, backend, and PostgreSQL
 - Local fallback database: SQLite through TypeORM
@@ -102,6 +102,7 @@ PORT=3000
 TypeORM creates the SQLite database file automatically when the backend starts.
 
 For PostgreSQL deployment, set `DB_TYPE=postgres` and provide `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_DATABASE`.
+Set `JWT_SECRET` in every non-test environment. The API fails fast when this secret is missing.
 
 ### Backend
 
@@ -151,9 +152,18 @@ The frontend uses `VITE_API_URL` when provided, otherwise it calls `http://local
 - E2E tests cover API behavior, authentication, authorization, and audit logging.
 - Invalid transitions are tested to ensure illegal workflow changes are blocked.
 
+## Known Trade-Offs And Next Steps
+
+- Status transitions and audit-log writes are wrapped in a database transaction so a claim cannot change state without its audit entry.
+- Reviewer claim queries intentionally exclude applicant drafts; reviewers only see submitted, in-review, and terminal claims.
+- Production disables TypeORM schema auto-sync. The next production-hardening step is to add explicit migrations for repeatable schema changes.
+- Uploaded files are stored on local disk for this assessment. In production, move attachments to object storage such as S3 or Render persistent disk.
+- Concurrent reviewer actions should be protected with optimistic locking or a status precondition check in the transition transaction.
+- AI assistance: Codex was used to review, implement, and verify changes; build and test output was checked manually before submission.
+
 ## Documentation
 
-- [Software Design Document](SOFTWARE_DESIGN_DOCUMENT.md)
-- [Architecture Diagram](ARCHITECTURE_DIAGRAM.md)
-- [Database ERD](DATABASE_ERD.md)
-- [Test Plan](TEST_PLAN.md)
+- [Software Design Document](docs/SOFTWARE_DESIGN_DOCUMENT.md)
+- [Architecture Diagram](docs/ARCHITECTURE_DIAGRAM.md)
+- [Database ERD](docs/DATABASE_ERD.md)
+- [Test Plan](docs/TEST_PLAN.md)

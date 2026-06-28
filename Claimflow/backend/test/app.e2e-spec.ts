@@ -11,6 +11,10 @@ describe('Authentication (e2e)', () => {
   jest.setTimeout(30000);
 
   beforeAll(async () => {
+    process.env.DB_TYPE = 'sqlite';
+    process.env.DB_DATABASE = ':memory:';
+    process.env.JWT_SECRET = 'test-secret';
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

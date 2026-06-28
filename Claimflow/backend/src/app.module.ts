@@ -34,7 +34,9 @@ const entities = [User, Application, AuditLog, Attachment];
       inject: [ConfigService],
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
         const dbType = configService.get<string>('DB_TYPE') || 'postgres';
-        const synchronize = configService.get<string>('DB_SYNCHRONIZE') !== 'false';
+        const synchronize =
+          configService.get<string>('DB_SYNCHRONIZE') ??
+          (configService.get<string>('NODE_ENV') === 'production' ? 'false' : 'true');
         const databaseUrl = configService.get<string>('DATABASE_URL');
         const sslEnabled = configService.get<string>('DB_SSL') === 'true';
 
@@ -43,14 +45,14 @@ const entities = [User, Application, AuditLog, Attachment];
             type: 'better-sqlite3',
             database: configService.get<string>('DB_DATABASE') || 'claimflow.sqlite',
             entities,
-            synchronize,
+            synchronize: synchronize !== 'false',
           };
         }
 
         const postgresConfig: TypeOrmModuleOptions = {
           type: 'postgres' as const,
           entities,
-          synchronize,
+          synchronize: synchronize !== 'false',
           ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         };
 

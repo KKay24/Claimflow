@@ -15,6 +15,7 @@ describe('Application workflow endpoints (e2e)', () => {
   beforeAll(async () => {
     process.env.DB_TYPE = 'sqlite';
     process.env.DB_DATABASE = ':memory:';
+    process.env.JWT_SECRET = 'test-secret';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -147,6 +148,38 @@ describe('Application workflow endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${reviewerToken}`)
       .expect(200);
     expect(approveResponse.body.status).toBe('APPROVED');
+  });
+
+  it('does not expose applicant drafts to reviewers', async () => {
+    const createResponse = await request(httpServer)
+      .post('/applications')
+      .set('Authorization', `Bearer ${applicantToken}`)
+      .field('title', 'Private draft claim')
+      .field('category', 'OTHER')
+      .field('description', 'Draft should not appear in reviewer queue')
+      .field('amount', '42')
+      .field('currency', 'AUD')
+      .field('expenseDate', '2026-06-24')
+      .expect(201);
+
+    const draftId = createResponse.body.id;
+
+    const reviewerListResponse = await request(httpServer)
+      .get('/reviewer/applications')
+      .set('Authorization', `Bearer ${reviewerToken}`)
+      .expect(200);
+    expect(reviewerListResponse.body.some((claim: { id: string }) => claim.id === draftId)).toBe(false);
+
+    const reviewerDraftFilterResponse = await request(httpServer)
+      .get('/reviewer/applications?status=DRAFT')
+      .set('Authorization', `Bearer ${reviewerToken}`)
+      .expect(200);
+    expect(reviewerDraftFilterResponse.body).toEqual([]);
+
+    await request(httpServer)
+      .get(`/reviewer/applications/${draftId}`)
+      .set('Authorization', `Bearer ${reviewerToken}`)
+      .expect(404);
   });
 
   it('enforces role guards on applicant and reviewer endpoints', async () => {

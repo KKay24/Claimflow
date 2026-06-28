@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Application, ApplicationStatus } from '../database/entities/application.entity';
 import { UserRole } from '../database/entities/user.entity';
 import { CreateApplicationDto } from './dto/create-application.dto';
@@ -17,6 +17,7 @@ export class ApplicationsService {
     private stateMachineService: ApplicationStateMachineService,
     private auditLogService: AuditLogService,
     private fileUploadService: FileUploadService,
+    private dataSource: DataSource,
   ) {}
 
   async create(
@@ -124,6 +125,10 @@ export class ApplicationsService {
   }
 
   async reviewerGetAll(status?: ApplicationStatus): Promise<Application[]> {
+    if (status === ApplicationStatus.DRAFT) {
+      return [];
+    }
+
     const query = this.applicationRepository
       .createQueryBuilder('app')
       .leftJoinAndSelect('app.applicant', 'applicant')
@@ -147,6 +152,8 @@ export class ApplicationsService {
 
     if (status) {
       query.where('app.status = :status', { status });
+    } else {
+      query.where('app.status != :draftStatus', { draftStatus: ApplicationStatus.DRAFT });
     }
 
     query.orderBy('app.createdAt', 'DESC');
@@ -160,6 +167,10 @@ export class ApplicationsService {
     });
 
     if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    if (application.status === ApplicationStatus.DRAFT) {
       throw new NotFoundException('Application not found');
     }
 
@@ -199,19 +210,20 @@ export class ApplicationsService {
       comment,
     );
 
-    // Apply status change
-    application.status = targetStatus;
-    const updatedApp = await this.applicationRepository.save(application);
+    return this.dataSource.transaction(async (manager) => {
+      application.status = targetStatus;
+      const updatedApp = await manager.getRepository(Application).save(application);
 
-    // Log the transition in Audit Log
-    await this.auditLogService.logTransition(
-      applicationId,
-      userId,
-      oldStatus,
-      targetStatus,
-      comment,
-    );
+      await this.auditLogService.logTransition(
+        applicationId,
+        userId,
+        oldStatus,
+        targetStatus,
+        comment,
+        manager,
+      );
 
-    return updatedApp;
+      return updatedApp;
+    });
   }
 }
